@@ -59,8 +59,8 @@ player_catalog_manager := class(creative_device):
         if (Cards := Catalog[Player]):
             var Total : int = 0
             for (CardId -> Count : Cards):
-                if (Card := CardCatalog.FindCard[CardId]):
-                    set Total += Card.IncomeRate * Count
+                Card := CardCatalog.FindCard(CardId)
+                set Total += Card.IncomeRate * Count
             Total
         else:
             0

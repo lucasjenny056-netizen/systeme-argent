@@ -88,8 +88,8 @@ card_catalog := class(creative_device):
             Index := GetRandomInt(0, FinalPool.Length - 1)
             if (Chosen := FinalPool[Index]) then Chosen else card_definition{}
 
-    # Recherche une carte par son identifiant. Échoue si elle n'existe pas.
-    FindCard<public>(CardId : string)<decides> : card_definition =
+    # Recherche une carte par son identifiant. Renvoie une carte "vide" (CardId := "") si non trouvée.
+    FindCard<public>(CardId : string) : card_definition =
         Matches := for (Card : Cards, Card.CardId = CardId):
             Card
-        Matches[0]
+        if (Found := Matches[0]) then Found else card_definition{}
