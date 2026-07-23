@@ -76,17 +76,17 @@ card_catalog := class(creative_device):
             card_rarity.Mythic
 
     # Tire une carte au hasard en tenant compte de la rareté et du niveau de chance.
-    # Échoue seulement si "Cards" est vide.
-    RollCard<public>(LuckLevel : int)<decides> : card_definition =
+    # Renvoie une carte "vide" (CardId := "") si "Cards" n'a aucune entrée.
+    RollCard<public>(LuckLevel : int) : card_definition =
         if (Cards.Length = 0):
-            false?
-
-        WantedRarity := RollRarity(LuckLevel)
-        Matches := for (Card : Cards, Card.Rarity = WantedRarity):
-            Card
-        FinalPool := if (Matches.Length > 0) then Matches else Cards
-        Index := GetRandomInt(0, FinalPool.Length - 1)
-        FinalPool[Index]
+            card_definition{}
+        else:
+            WantedRarity := RollRarity(LuckLevel)
+            Matches := for (Card : Cards, Card.Rarity = WantedRarity):
+                Card
+            FinalPool := if (Matches.Length > 0) then Matches else Cards
+            Index := GetRandomInt(0, FinalPool.Length - 1)
+            if (Chosen := FinalPool[Index]) then Chosen else card_definition{}
 
     # Recherche une carte par son identifiant. Échoue si elle n'existe pas.
     FindCard<public>(CardId : string)<decides> : card_definition =

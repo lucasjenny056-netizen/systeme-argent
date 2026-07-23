@@ -110,7 +110,8 @@ player_catalog_manager := class(creative_device):
         CurrentLevel := GetLuckLevel(Player)
         if (CurrentLevel < MaxLuckLevel):
             Cost := LuckUpgradeBaseCost * (CurrentLevel + 1)
-            if (Manager.TrySpend(Player, Cost)):
+            Spent : logic = Manager.TrySpend(Player, Cost)
+            if (Spent?):
                 set LuckLevel[Player] = CurrentLevel + 1
                 true
             else:

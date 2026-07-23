@@ -39,7 +39,8 @@ pack_slot_device := class(creative_device):
     OnInteracted(Agent : agent) : void =
         IsFree : logic = not Occupied
         if (IsFree?, Player := player[Agent]):
-            if (Catalog.TryConsumePack(Player)):
+            Consumed : logic = Catalog.TryConsumePack(Player)
+            if (Consumed?):
                 spawn{ OpenPack(Player) }
 
     OpenPack(Player : player)<suspends> : void =
@@ -48,5 +49,5 @@ pack_slot_device := class(creative_device):
         Sleep(OpenDelaySeconds)
         PackProp.Hide()
         set Occupied = false
-        if (Card := CardCatalog.RollCard[Catalog.GetLuckLevel(Player)]):
-            Catalog.AddCard(Player, Card.CardId)
+        Card : card_definition = CardCatalog.RollCard(Catalog.GetLuckLevel(Player))
+        Catalog.AddCard(Player, Card.CardId)

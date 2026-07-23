@@ -25,5 +25,6 @@ pack_shop_device := class(creative_device):
 
     OnInteracted(Agent : agent) : void =
         if (Player := player[Agent]):
-            if (Manager.TrySpend(Player, PackCost)):
+            Spent : logic = Manager.TrySpend(Player, PackCost)
+            if (Spent?):
                 Catalog.GrantPack(Player, 1)

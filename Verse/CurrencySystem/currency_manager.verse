@@ -34,10 +34,7 @@ currency_manager := class(creative_device):
 
     # Renvoie le solde actuel du joueur (0 s'il n'a pas encore rejoint).
     GetBalance<public>(Player : player) : int =
-        if (Balance := Balances[Player]):
-            Balance
-        else:
-            0
+        if (Balance := Balances[Player]) then Balance else 0
 
     # Ajoute de l'argent (ignore les montants négatifs ou nuls).
     AddMoney<public>(Player : player, Amount : int) : void =

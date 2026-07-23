@@ -35,10 +35,7 @@ money_pickup_device := class(creative_device):
             GrantMoney(Player)
 
     HasCollected(Player : player) : logic =
-        if (Collected := AlreadyCollected[Player]):
-            Collected
-        else:
-            false
+        if (Collected := AlreadyCollected[Player]) then Collected else false
 
     GrantMoney(Player : player) : void =
         if (OneTimeOnly?):

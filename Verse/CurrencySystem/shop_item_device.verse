@@ -32,5 +32,6 @@ shop_item_device := class(creative_device):
 
     OnInteracted(Agent : agent) : void =
         if (Player := player[Agent]):
-            if (Manager.TrySpend(Player, Cost)):
+            Spent : logic = Manager.TrySpend(Player, Cost)
+            if (Spent?):
                 OnPurchased.Signal(Player)
