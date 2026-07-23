@@ -15,7 +15,7 @@ currency_manager := class(creative_device):
 
     # Solde de départ donné à chaque joueur qui rejoint la partie.
     @editable
-    StartingBalance : int = 0
+    StartingBalance : int = 500
 
     # Solde courant de chaque joueur.
     var Balances : [player]int = map{}
