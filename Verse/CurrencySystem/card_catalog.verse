@@ -10,11 +10,11 @@ card_rarity := enum:
     Mythic
 
 card_definition := struct<concrete>:
-    CardId : string
-    DisplayName : string
-    Rarity : card_rarity
+    CardId : string = ""
+    DisplayName : string = ""
+    Rarity : card_rarity = card_rarity.Common
     # Argent généré par seconde tant que le joueur possède un exemplaire de cette carte.
-    IncomeRate : int
+    IncomeRate : int = 0
 
 # Table de toutes les cartes du jeu + tirage aléatoire pondéré par rareté.
 # Une seule instance sur la map. Remplis "Cards" dans les propriétés du

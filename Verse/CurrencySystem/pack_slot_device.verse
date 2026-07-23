@@ -36,9 +36,9 @@ pack_slot_device := class(creative_device):
     OnBegin<override>()<suspends> : void =
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
-    OnInteracted(Agent : agent) : void =
+    OnInteracted(MaybeAgent : ?agent) : void =
         IsFree : logic = not Occupied
-        if (IsFree?, Player := player[Agent]):
+        if (IsFree?, Agent := MaybeAgent, Player := player[Agent]):
             if (Catalog.TryConsumePack(Player)):
                 spawn{ OpenPack(Player) }
 

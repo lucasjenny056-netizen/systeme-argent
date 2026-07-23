@@ -23,7 +23,7 @@ pack_shop_device := class(creative_device):
     OnBegin<override>()<suspends> : void =
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
-    OnInteracted(Agent : agent) : void =
-        if (Player := player[Agent]):
+    OnInteracted(MaybeAgent : ?agent) : void =
+        if (Agent := MaybeAgent, Player := player[Agent]):
             if (Manager.TrySpend(Player, PackCost)):
                 Catalog.GrantPack(Player, 1)

@@ -30,13 +30,13 @@ money_pickup_device := class(creative_device):
     OnBegin<override>()<suspends> : void =
         Trigger.TriggeredEvent.Subscribe(OnTriggered)
 
-    OnTriggered(Agent : agent) : void =
-        if (Player := player[Agent]):
+    OnTriggered(MaybeAgent : ?agent) : void =
+        if (Agent := MaybeAgent, Player := player[Agent]):
             GrantMoney(Player)
 
     GrantMoney(Player : player) : void =
-        if (OneTimeOnly?, AlreadyCollected[Player]):
-            return
-
-        set AlreadyCollected[Player] = true
-        Manager.AddMoney(Player, Amount)
+        HasAlready : logic = if (Collected := AlreadyCollected[Player]) then Collected else false
+        CanCollect : logic = not OneTimeOnly or not HasAlready
+        if (CanCollect?):
+            set AlreadyCollected[Player] = true
+            Manager.AddMoney(Player, Amount)

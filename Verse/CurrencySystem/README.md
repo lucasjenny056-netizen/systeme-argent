@@ -46,7 +46,15 @@ peut regarder une approche avec un Prop Spawner + Item Granted Device.
 
 ## Installation dans ton projet UEFN
 
-1. Copie tout le dossier `CurrencySystem` dans `Content` de ton projet UEFN.
+1. Copie tout le dossier `CurrencySystem` dans `Content` de ton projet UEFN,
+   **en gardant tous les fichiers `.verse` dans le même dossier**. En Verse,
+   des fichiers dans des dossiers différents sont dans des modules
+   différents et ne se voient pas sans `using` explicite — si tu vois une
+   erreur "Unknown identifier `currency_manager`" (ou un autre type défini
+   ici), c'est presque toujours parce qu'un fichier a été déplacé/recréé
+   ailleurs. Ne renomme pas non plus les fichiers un par un depuis
+   l'éditeur UEFN (ça peut les faire atterrir dans des dossiers séparés) :
+   copie-colle le dossier entier tel quel.
 2. Laisse Verse compiler, puis dans l'éditeur de niveau :
    - Un device vide → `currency_manager`.
    - Un device vide → `card_catalog` (remplis/édite la liste `Cards`,
