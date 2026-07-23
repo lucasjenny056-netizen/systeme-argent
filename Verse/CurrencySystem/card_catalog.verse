@@ -9,7 +9,7 @@ card_rarity := enum:
     Legendary
     Mythic
 
-card_definition := struct:
+card_definition := struct<concrete>:
     CardId : string
     DisplayName : string
     Rarity : card_rarity
@@ -77,7 +77,7 @@ card_catalog := class(creative_device):
 
     # Tire une carte au hasard en tenant compte de la rareté et du niveau de chance.
     # Échoue seulement si "Cards" est vide.
-    RollCard<public><decides>(LuckLevel : int) : card_definition =
+    RollCard<public>(LuckLevel : int)<decides> : card_definition =
         if (Cards.Length = 0):
             false?
 
@@ -89,7 +89,7 @@ card_catalog := class(creative_device):
         FinalPool[Index]
 
     # Recherche une carte par son identifiant. Échoue si elle n'existe pas.
-    FindCard<public><decides>(CardId : string) : card_definition =
+    FindCard<public>(CardId : string)<decides> : card_definition =
         Matches := for (Card : Cards, Card.CardId = CardId):
             Card
         Matches[0]
