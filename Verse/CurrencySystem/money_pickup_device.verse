@@ -25,7 +25,7 @@ money_pickup_device := class(creative_device):
     @editable
     OneTimeOnly : logic = false
 
-    var AlreadyCollected : [player]logic = map{}
+    var AlreadyCollected : [player]int = map{}
 
     OnBegin<override>()<suspends> : void =
         Trigger.TriggeredEvent.Subscribe(OnTriggered)
@@ -35,13 +35,14 @@ money_pickup_device := class(creative_device):
             GrantMoney(Player)
 
     HasCollected(Player : player) : logic =
-        if (Collected := AlreadyCollected[Player]) then Collected else false
+        Count := if (C := AlreadyCollected[Player]) then C else 0
+        Count > 0
 
     GrantMoney(Player : player) : void =
         if (OneTimeOnly?):
             if (HasCollected(Player) = false):
-                if (set AlreadyCollected[Player] = true):
+                if (set AlreadyCollected[Player] = 1):
                     Manager.AddMoney(Player, Amount)
         else:
-            if (set AlreadyCollected[Player] = true):
+            if (set AlreadyCollected[Player] = 1):
                 Manager.AddMoney(Player, Amount)
