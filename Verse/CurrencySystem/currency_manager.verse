@@ -22,7 +22,7 @@ currency_manager := class(creative_device):
 
     # Diffusé à chaque fois que le solde d'un joueur change (nouveau solde inclus).
     # D'autres devices/scripts peuvent s'y abonner pour mettre à jour un affichage.
-    BalanceChanged<public> : event(player, int) = event(player, int){}
+    BalanceChanged<public> : event(player) = event(player){}
 
     OnBegin<override>()<suspends> : void =
         GetPlayspace().PlayerAddedEvent().Subscribe(OnPlayerAdded)
@@ -30,7 +30,7 @@ currency_manager := class(creative_device):
     OnPlayerAdded(Agent : agent) : void =
         if (Player := player[Agent]):
             set Balances[Player] = StartingBalance
-            BalanceChanged.Signal(Player, StartingBalance)
+            BalanceChanged.Signal(Player)
 
     # Renvoie le solde actuel du joueur (0 s'il n'a pas encore rejoint).
     GetBalance<public>(Player : player) : int =
@@ -44,7 +44,7 @@ currency_manager := class(creative_device):
         if (Amount > 0):
             NewBalance := GetBalance(Player) + Amount
             set Balances[Player] = NewBalance
-            BalanceChanged.Signal(Player, NewBalance)
+            BalanceChanged.Signal(Player)
 
     # Tente de dépenser Amount. Renvoie true et déduit la somme si le joueur
     # a les fonds nécessaires, sinon renvoie false et ne touche à rien.
@@ -53,7 +53,7 @@ currency_manager := class(creative_device):
         if (Amount > 0, Current >= Amount):
             NewBalance := Current - Amount
             set Balances[Player] = NewBalance
-            BalanceChanged.Signal(Player, NewBalance)
+            BalanceChanged.Signal(Player)
             true
         else:
             false
@@ -62,4 +62,4 @@ currency_manager := class(creative_device):
     SetBalance<public>(Player : player, NewBalance : int) : void =
         if (NewBalance >= 0):
             set Balances[Player] = NewBalance
-            BalanceChanged.Signal(Player, NewBalance)
+            BalanceChanged.Signal(Player)

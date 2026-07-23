@@ -30,7 +30,7 @@ shop_item_device := class(creative_device):
     OnBegin<override>()<suspends> : void =
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
-    OnInteracted(MaybeAgent : ?agent) : void =
-        if (Agent := MaybeAgent?, Player := player[Agent]):
+    OnInteracted(Agent : agent) : void =
+        if (Player := player[Agent]):
             if (Manager.TrySpend(Player, Cost)):
                 OnPurchased.Signal(Player)

@@ -49,7 +49,7 @@ player_catalog_manager := class(creative_device):
     IncomeLoop()<suspends> : void =
         loop:
             Sleep(1.0)
-            for (Player -> _ : Catalog):
+            for (Player -> PlayerCards : Catalog):
                 Rate := GetIncomeRate(Player)
                 if (Rate > 0):
                     Current := if (Pending := PendingCash[Player]) then Pending else 0
@@ -60,7 +60,7 @@ player_catalog_manager := class(creative_device):
         if (Cards := Catalog[Player]):
             var Total : int = 0
             for (CardId -> Count : Cards):
-                if (Card := CardCatalog.FindCard(CardId)):
+                if (Card := CardCatalog.FindCard[CardId]):
                     set Total += Card.IncomeRate * Count
             Total
         else:
