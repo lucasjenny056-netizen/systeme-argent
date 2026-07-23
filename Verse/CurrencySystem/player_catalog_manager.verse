@@ -40,10 +40,8 @@ player_catalog_manager := class(creative_device):
 
     OnPlayerAdded(Agent : agent) : void =
         if (Player := player[Agent]):
-            set PackCount[Player] = 0
-            set Catalog[Player] = map{}
-            set PendingCash[Player] = 0
-            set LuckLevel[Player] = 0
+            if (set PackCount[Player] = 0, set Catalog[Player] = map{}, set PendingCash[Player] = 0, set LuckLevel[Player] = 0):
+                true
 
     # Distribue l'argent passif toutes les secondes selon les cartes possédées par chacun.
     IncomeLoop()<suspends> : void =
@@ -53,7 +51,8 @@ player_catalog_manager := class(creative_device):
                 Rate := GetIncomeRate(Player)
                 if (Rate > 0):
                     Current := if (Pending := PendingCash[Player]) then Pending else 0
-                    set PendingCash[Player] = Current + Rate
+                    if (set PendingCash[Player] = Current + Rate):
+                        true
 
     # Somme des revenus/seconde de toutes les cartes possédées par le joueur.
     GetIncomeRate<public>(Player : player) : int =
@@ -79,14 +78,17 @@ player_catalog_manager := class(creative_device):
     GrantPack<public>(Player : player, Count : int) : void =
         if (Count > 0):
             Current := GetPackCount(Player)
-            set PackCount[Player] = Current + Count
+            if (set PackCount[Player] = Current + Count):
+                true
 
     # Consomme un pack si le joueur en possède au moins un. Renvoie true si consommé.
     TryConsumePack<public>(Player : player) : logic =
         Current := GetPackCount(Player)
         if (Current > 0):
-            set PackCount[Player] = Current - 1
-            true
+            if (set PackCount[Player] = Current - 1):
+                true
+            else:
+                false
         else:
             false
 
@@ -95,15 +97,16 @@ player_catalog_manager := class(creative_device):
         ExistingCards := if (Cards := Catalog[Player]) then Cards else map{}
         CurrentCount := if (Count := ExistingCards[CardId]) then Count else 0
         var UpdatedCards : [string]int = ExistingCards
-        set UpdatedCards[CardId] = CurrentCount + 1
-        set Catalog[Player] = UpdatedCards
+        if (set UpdatedCards[CardId] = CurrentCount + 1):
+            if (set Catalog[Player] = UpdatedCards):
+                true
 
     # Transfère l'argent en attente vers le solde principal du joueur.
     CollectPending<public>(Player : player) : void =
         Pending := GetPendingCash(Player)
         if (Pending > 0):
-            set PendingCash[Player] = 0
-            Manager.AddMoney(Player, Pending)
+            if (set PendingCash[Player] = 0):
+                Manager.AddMoney(Player, Pending)
 
     # Dépense de l'argent pour augmenter le niveau de chance du joueur.
     TryUpgradeLuck<public>(Player : player) : logic =
@@ -112,8 +115,10 @@ player_catalog_manager := class(creative_device):
             Cost := LuckUpgradeBaseCost * (CurrentLevel + 1)
             Spent : logic = Manager.TrySpend(Player, Cost)
             if (Spent?):
-                set LuckLevel[Player] = CurrentLevel + 1
-                true
+                if (set LuckLevel[Player] = CurrentLevel + 1):
+                    true
+                else:
+                    false
             else:
                 false
         else:

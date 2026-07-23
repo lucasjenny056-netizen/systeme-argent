@@ -29,8 +29,8 @@ currency_manager := class(creative_device):
 
     OnPlayerAdded(Agent : agent) : void =
         if (Player := player[Agent]):
-            set Balances[Player] = StartingBalance
-            BalanceChanged.Signal(Player)
+            if (set Balances[Player] = StartingBalance):
+                BalanceChanged.Signal(Player)
 
     # Renvoie le solde actuel du joueur (0 s'il n'a pas encore rejoint).
     GetBalance<public>(Player : player) : int =
@@ -40,8 +40,8 @@ currency_manager := class(creative_device):
     AddMoney<public>(Player : player, Amount : int) : void =
         if (Amount > 0):
             NewBalance := GetBalance(Player) + Amount
-            set Balances[Player] = NewBalance
-            BalanceChanged.Signal(Player)
+            if (set Balances[Player] = NewBalance):
+                BalanceChanged.Signal(Player)
 
     # Tente de dépenser Amount. Renvoie true et déduit la somme si le joueur
     # a les fonds nécessaires, sinon renvoie false et ne touche à rien.
@@ -49,14 +49,16 @@ currency_manager := class(creative_device):
         Current := GetBalance(Player)
         if (Amount > 0, Current >= Amount):
             NewBalance := Current - Amount
-            set Balances[Player] = NewBalance
-            BalanceChanged.Signal(Player)
-            true
+            if (set Balances[Player] = NewBalance):
+                BalanceChanged.Signal(Player)
+                true
+            else:
+                false
         else:
             false
 
     # Force le solde à une valeur précise (utile pour un admin/debug command).
     SetBalance<public>(Player : player, NewBalance : int) : void =
         if (NewBalance >= 0):
-            set Balances[Player] = NewBalance
-            BalanceChanged.Signal(Player)
+            if (set Balances[Player] = NewBalance):
+                BalanceChanged.Signal(Player)

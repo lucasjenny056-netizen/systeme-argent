@@ -40,8 +40,8 @@ money_pickup_device := class(creative_device):
     GrantMoney(Player : player) : void =
         if (OneTimeOnly?):
             if (not HasCollected(Player)):
-                set AlreadyCollected[Player] = true
-                Manager.AddMoney(Player, Amount)
+                if (set AlreadyCollected[Player] = true):
+                    Manager.AddMoney(Player, Amount)
         else:
-            set AlreadyCollected[Player] = true
-            Manager.AddMoney(Player, Amount)
+            if (set AlreadyCollected[Player] = true):
+                Manager.AddMoney(Player, Amount)
