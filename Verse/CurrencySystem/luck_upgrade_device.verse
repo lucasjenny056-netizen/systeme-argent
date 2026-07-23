@@ -19,5 +19,5 @@ luck_upgrade_device := class(creative_device):
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
     OnInteracted(MaybeAgent : ?agent) : void =
-        if (Agent := MaybeAgent, Player := player[Agent]):
+        if (Agent := MaybeAgent?, Player := player[Agent]):
             Catalog.TryUpgradeLuck(Player)

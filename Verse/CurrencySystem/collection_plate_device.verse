@@ -17,5 +17,5 @@ collection_plate_device := class(creative_device):
         Trigger.TriggeredEvent.Subscribe(OnTriggered)
 
     OnTriggered(MaybeAgent : ?agent) : void =
-        if (Agent := MaybeAgent, Player := player[Agent]):
+        if (Agent := MaybeAgent?, Player := player[Agent]):
             Catalog.CollectPending(Player)

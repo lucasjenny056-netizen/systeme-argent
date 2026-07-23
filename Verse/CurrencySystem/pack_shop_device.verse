@@ -24,6 +24,6 @@ pack_shop_device := class(creative_device):
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
     OnInteracted(MaybeAgent : ?agent) : void =
-        if (Agent := MaybeAgent, Player := player[Agent]):
+        if (Agent := MaybeAgent?, Player := player[Agent]):
             if (Manager.TrySpend(Player, PackCost)):
                 Catalog.GrantPack(Player, 1)

@@ -38,7 +38,7 @@ pack_slot_device := class(creative_device):
 
     OnInteracted(MaybeAgent : ?agent) : void =
         IsFree : logic = not Occupied
-        if (IsFree?, Agent := MaybeAgent, Player := player[Agent]):
+        if (IsFree?, Agent := MaybeAgent?, Player := player[Agent]):
             if (Catalog.TryConsumePack(Player)):
                 spawn{ OpenPack(Player) }
 
