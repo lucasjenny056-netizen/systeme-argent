@@ -37,8 +37,9 @@ pack_slot_device := class(creative_device):
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
     OnInteracted(Agent : agent) : void =
-        IsFree : logic = Occupied = false
-        if (IsFree?):
+        if (Occupied?):
+            true
+        else:
             if (Player := player[Agent]):
                 Consumed : logic = Catalog.TryConsumePack(Player)
                 if (Consumed?):

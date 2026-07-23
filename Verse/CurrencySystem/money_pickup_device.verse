@@ -34,15 +34,11 @@ money_pickup_device := class(creative_device):
         if (Agent := MaybeAgent?, Player := player[Agent]):
             GrantMoney(Player)
 
-    HasCollected(Player : player) : logic =
-        if (Count := AlreadyCollected[Player]):
-            Count > 0
-        else:
-            false
-
     GrantMoney(Player : player) : void =
         if (OneTimeOnly?):
-            if (HasCollected(Player) = false):
+            if (AlreadyCollected[Player]):
+                true
+            else:
                 if (set AlreadyCollected[Player] = 1):
                     Manager.AddMoney(Player, Amount)
         else:
