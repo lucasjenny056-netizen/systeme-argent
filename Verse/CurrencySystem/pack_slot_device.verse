@@ -26,9 +26,9 @@ using { /Verse.org/Simulation }
 #   Common        6000   3000   1000     300      100       0       0      0      0
 #   Uncommon      2500   3000   2500    1200      600     200      50      0      0
 #   Rare           800   2200   2800    2500     1700     800     300    100     20
-#   Epic           200   1000   2000    2800     2800    1800    1000    400    100
-#   Legendary       500   300    900    1700     2500    2500    2000   1000    400
-#   Mythic (plaf.)   0    500    300     700     1200    2300    2500   1800   1000
+#   Epic           200   1300   2000    2800     2800    1800    1000    400    100
+#   Legendary       500   500    900    1700     2500    2500    2000   1000    400
+#   Mythic (plaf.)   0      0    300     700     1200    2300    2500   1800   1000
 #   Secret            0     0    500     300      500    1400    2500   2500   1800
 #   Divine             0     0      0     500      100     200     450   2400   2675
 #   Exotic              0     0      0       0      500     800    1200   1800   4000
@@ -37,11 +37,12 @@ using { /Verse.org/Simulation }
 #   Prix suggéré   300$  1500$ 10000$  50000$    250000$    1M$     20M$   400M$   10B$
 #   (1M = 1 000 000 / 1Md = 1 000M / 1B = 1Md / 1T = 1 000Md / 1Qa = 1 000T)
 #
-# Détail des plafonds : Common ne peut avoir que jusqu'à Legendary (5% pile),
-# Rare jusqu'à Mythic (5%), Epic jusqu'à Secret (5%), Legendary jusqu'à
-# Divine (5%), Elite jusqu'à Exotic (5%). Les paliers Mythic/Secret/Divine
-# augmentent progressivement la chance d'Exotic (8%, 12%, 18%) sans jamais
-# donner Admin. Seul "exotic" (le plus cher) peut donner Admin, à 0.05%.
+# Détail des plafonds : Common ne peut avoir que jusqu'à Legendary (5% pile,
+# rien au-dessus), Rare aussi jusqu'à Legendary (5% pile, pas de Mythic),
+# Epic jusqu'à Secret (5%), Legendary jusqu'à Divine (5%), Elite jusqu'à
+# Exotic (5%). Les paliers Mythic/Secret/Divine augmentent progressivement
+# la chance d'Exotic (8%, 12%, 18%) sans jamais donner Admin. Seul "exotic"
+# (le plus cher) peut donner Admin, à 0.05%.
 #
 # "Elite" est un palier intermédiaire entre Legendary et Mythic (l'écart de
 # prix entre les deux était trop grand). Rien ne t'empêche d'ajouter encore
