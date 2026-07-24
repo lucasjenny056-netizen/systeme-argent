@@ -15,24 +15,28 @@ using { /Verse.org/Simulation }
 # LuckWeightPerLevel ajoute un petit bonus (aux raretés non-Common) par
 # niveau de chance du joueur, en plus de la table du pack.
 #
-# Progression suggérée sur 8 packs, du moins cher au plus cher (TierId entre
+# Progression suggérée sur 9 packs, du moins cher au plus cher (TierId entre
 # parenthèses). Colonnes = valeurs à copier dans les 10 champs XxxWeight de
 # chaque pack_slot_device (elles totalisent toutes 10000) :
 #
-#                Commun  Rare   Épique  Légend. Mythique Secret  Divin  Exotic
-#   Common        7000   4000   2000     800     200      50      0      0
-#   Uncommon      2000   3000   2500    1500     700     200     50      0
-#   Rare           800   2000   2500    2200    1500     700    200     50
-#   Epic           150    700   1800    2500    2500    1800    700    300
-#   Legendary       40    200    800    2000    2500    2500   1800   1200
-#   Mythic          10     70    300     700    1800    2500   2500   2200
-#   Secret           0     20     70     200     550    1700   2500   2500
-#   Divine           0      8     20      70     180     470   1800   2350
-#   Exotic           0      2      8      25      55      55    400   1300
-#   Admin            0      0      2       5      15      25     50    100 (1%)
-#   TierId       "common" "rare" "epic" "legendary" "mythic" "secret" "divine" "exotic"
-#   Prix suggéré   300$  1500$ 10000$  50000$    1M$     20M$   400M$   1Qa$
-#   (1M = 1 000 000 / 1Md = 1 000M / 1T = 1 000Md / 1Qa = 1 000T)
+#                Commun  Rare   Épique  Légend.  Elite  Mythique Secret  Divin  Exotic
+#   Common        7000   4000   2000     800      500     200      50      0      0
+#   Uncommon      2000   3000   2500    1500     1100     700      200     50      0
+#   Rare           800   2000   2500    2200     1850    1500      700    200     50
+#   Epic           150    700   1800    2500     2500    2500     1800    700    300
+#   Legendary       40    200    800    2000     2250    2500     2500   1800   1200
+#   Mythic          10     70    300     700     1250    1800     2500   2500   2200
+#   Secret           0     20     70     200      375     550     1700   2500   2500
+#   Divine           0      8     20      70      125     180      470   1800   2350
+#   Exotic           0      2      8      25       40      55       55    400   1300
+#   Admin            0      0      2       5       10      15       25     50    100 (1%)
+#   TierId       "common" "rare" "epic" "legendary" "elite" "mythic" "secret" "divine" "exotic"
+#   Prix suggéré   300$  1500$ 10000$  50000$    250000$    1M$     20M$   400M$   10B$
+#   (1M = 1 000 000 / 1Md = 1 000M / 1B = 1Md / 1T = 1 000Md / 1Qa = 1 000T)
+#
+# "Elite" est un palier intermédiaire entre Legendary et Mythic (l'écart de
+# prix entre les deux était trop grand). Rien ne t'empêche d'ajouter encore
+# d'autres paliers de la même façon : chaque pack_slot_device est indépendant.
 #
 # Le pack "exotic" (le plus cher) a exactement 1% de chance de donner une
 # carte Admin, le reste de la progression monte en douceur avant ça.
