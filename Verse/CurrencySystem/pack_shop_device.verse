@@ -22,7 +22,7 @@ pack_shop_device := class(creative_device):
     Catalog : player_catalog_manager = player_catalog_manager{}
 
     @editable
-    PackCost : int = 100
+    PackCost : int = 300
 
     @editable
     TierId : string = "common"

@@ -21,7 +21,7 @@ pack_shop_ui_device := class(creative_device):
     Catalog : player_catalog_manager = player_catalog_manager{}
 
     @editable
-    PackCost : int = 100
+    PackCost : int = 300
 
     # Doit correspondre au TierId du pack_slot_device où ce pack sera ouvert.
     @editable
