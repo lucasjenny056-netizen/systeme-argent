@@ -22,12 +22,16 @@ card_definition := struct<concrete>:
     # Argent généré par seconde tant que le joueur possède un exemplaire de cette carte.
     IncomeRate : int = 0
 
-# Paire rareté/poids utilisée en interne par le tirage aléatoire pondéré.
+# Paire rareté/poids : une table complète de 10 (une par rareté) est fournie
+# par CHAQUE pack_slot_device (voir ce fichier), pas par card_catalog. Ça
+# permet à chaque type de pack d'avoir ses propres chances exactes (ex: le
+# pack de base donne 0.5% de Legendary, le pack premium 2% de Legendary +
+# 0.5% de Divine, etc.) plutôt qu'un simple bonus partagé.
 rarity_weight := struct<concrete>:
     Rarity : card_rarity = card_rarity.Common
     Weight : int = 0
 
-# Table de toutes les cartes du jeu + tirage aléatoire pondéré par rareté.
+# Table de toutes les cartes du jeu (indépendante des probabilités de pack).
 # Une seule instance sur la map. Remplis "Cards" dans les propriétés du
 # device (éditeur UEFN) avec tes propres cartes brainrot.
 #
@@ -57,65 +61,16 @@ card_catalog := class(creative_device):
         card_definition{CardId := "sussy_exotic", DisplayName := "Sussy Baka Imposter", Rarity := card_rarity.Exotic, IncomeRate := 750}
         card_definition{CardId := "owner_admin", DisplayName := "Server Owner", Rarity := card_rarity.Admin, IncomeRate := 2000}
 
-    # Poids de base de chaque rareté (plus le nombre est grand, plus c'est fréquent).
-    @editable
-    CommonWeight : int = 10000
-
-    @editable
-    UncommonWeight : int = 5000
-
-    @editable
-    RareWeight : int = 2000
-
-    @editable
-    EpicWeight : int = 800
-
-    @editable
-    LegendaryWeight : int = 300
-
-    @editable
-    MythicWeight : int = 100
-
-    @editable
-    SecretWeight : int = 30
-
-    @editable
-    DivineWeight : int = 8
-
-    @editable
-    ExoticWeight : int = 2
-
-    # À 0 par défaut : personne ne peut tirer une carte Admin via les packs.
-    # Monte ce nombre si tu veux qu'elle soit obtenable normalement.
-    @editable
-    AdminWeight : int = 0
-
-    # Poids ajouté aux raretés non-Common par niveau de chance du joueur.
-    @editable
-    LuckWeightPerLevel : int = 3
-
-    RollRarity(BonusWeight : int) : card_rarity =
-        Tiers : []rarity_weight = array:
-            rarity_weight{Rarity := card_rarity.Common, Weight := CommonWeight}
-            rarity_weight{Rarity := card_rarity.Uncommon, Weight := UncommonWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Rare, Weight := RareWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Epic, Weight := EpicWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Legendary, Weight := LegendaryWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Mythic, Weight := MythicWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Secret, Weight := SecretWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Divine, Weight := DivineWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Exotic, Weight := ExoticWeight + BonusWeight}
-            rarity_weight{Rarity := card_rarity.Admin, Weight := AdminWeight + BonusWeight}
-
+    RollRarity(Weights : []rarity_weight) : card_rarity =
         var TotalWeight : int = 0
-        for (Tier : Tiers):
+        for (Tier : Weights):
             set TotalWeight += Tier.Weight
 
         Roll := GetRandomInt(0, TotalWeight - 1)
 
         var CumulativeWeight : int = 0
         var Result : card_rarity = card_rarity.Common
-        for (Tier : Tiers):
+        for (Tier : Weights):
             NewCumulative := CumulativeWeight + Tier.Weight
             if (Roll >= CumulativeWeight, Roll < NewCumulative):
                 set Result = Tier.Rarity
@@ -123,16 +78,14 @@ card_catalog := class(creative_device):
 
         Result
 
-    # Tire une carte au hasard en tenant compte de la rareté, du niveau de
-    # chance du joueur ET du bonus propre au type de pack ouvert (un pack
-    # plus cher passe un PackBonusWeight plus élevé -> meilleures chances).
-    # Renvoie une carte "vide" (CardId := "") si "Cards" n'a aucune entrée.
-    RollCard<public>(LuckLevel : int, PackBonusWeight : int) : card_definition =
+    # Tire une carte au hasard selon la table de poids fournie par l'appelant
+    # (voir pack_slot_device.BuildWeights). Renvoie une carte "vide"
+    # (CardId := "") si "Cards" n'a aucune entrée.
+    RollCard<public>(Weights : []rarity_weight) : card_definition =
         if (Cards.Length = 0):
             card_definition{}
         else:
-            BonusWeight := LuckLevel * LuckWeightPerLevel + PackBonusWeight
-            WantedRarity := RollRarity(BonusWeight)
+            WantedRarity := RollRarity(Weights)
             Matches := for (Card : Cards, Card.Rarity = WantedRarity):
                 Card
             FinalPool := if (Matches.Length > 0) then Matches else Cards
