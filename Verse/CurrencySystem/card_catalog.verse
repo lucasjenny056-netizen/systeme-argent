@@ -2,7 +2,7 @@ using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /Verse.org/Random }
 
-# Du plus fréquent au plus rare.
+# Du plus fréquent au plus rare. Exotic est la rareté ultime.
 card_rarity := enum:
     Common
     Uncommon
@@ -13,7 +13,6 @@ card_rarity := enum:
     Secret
     Divine
     Exotic
-    Admin
 
 card_definition := struct<concrete>:
     CardId : string = ""
@@ -45,7 +44,6 @@ rarity_weight := struct<concrete>:
 #   fanum_secret     / Secret    / 120 $/s
 #   livvy_divine     / Divine    / 300 $/s
 #   sussy_exotic     / Exotic    / 750 $/s
-#   owner_admin      / Admin     / 2000 $/s
 card_catalog := class(creative_device):
 
     @editable
@@ -59,7 +57,6 @@ card_catalog := class(creative_device):
         card_definition{CardId := "fanum_secret", DisplayName := "Fanum Tax Collector", Rarity := card_rarity.Secret, IncomeRate := 120}
         card_definition{CardId := "livvy_divine", DisplayName := "Certified Divine", Rarity := card_rarity.Divine, IncomeRate := 300}
         card_definition{CardId := "sussy_exotic", DisplayName := "Sussy Baka Imposter", Rarity := card_rarity.Exotic, IncomeRate := 750}
-        card_definition{CardId := "owner_admin", DisplayName := "Server Owner", Rarity := card_rarity.Admin, IncomeRate := 2000}
 
     RollRarity(Weights : []rarity_weight) : card_rarity =
         var TotalWeight : int = 0

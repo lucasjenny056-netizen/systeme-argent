@@ -10,13 +10,13 @@ using { /Verse.org/Simulation }
 # type-là.
 #
 # Chaque instance de ce device définit SA PROPRE table de probabilités
-# (les 10 champs XxxWeight ci-dessous). Règle-les pour qu'ils totalisent
-# 10000 : un poids = un pourcentage x100 (ex: 50 = 0.5%, 200 = 2%).
+# (les 9 champs XxxWeight ci-dessous, un par rareté). Règle-les pour qu'ils
+# totalisent 10000 : un poids = un pourcentage x100 (ex: 50 = 0.5%, 200 = 2%).
 # LuckWeightPerLevel ajoute un petit bonus (aux raretés non-Common) par
 # niveau de chance du joueur, en plus de la table du pack.
 #
 # Progression suggérée sur 9 packs, du moins cher au plus cher (TierId entre
-# parenthèses). Colonnes = valeurs à copier dans les 10 champs XxxWeight de
+# parenthèses). Colonnes = valeurs à copier dans les 9 champs XxxWeight de
 # chaque pack_slot_device (elles totalisent toutes 10000) :
 #
 #                Commun  Rare   Épique  Légend.  Elite  Mythique Secret  Divin  Exotic
@@ -25,11 +25,10 @@ using { /Verse.org/Simulation }
 #   Rare           800   2000   2500    2200     1850    1500      700    200     50
 #   Epic           150    700   1800    2500     2500    2500     1800    700    300
 #   Legendary       40    200    800    2000     2250    2500     2500   1800   1200
-#   Mythic          10     70    300     700     1250    1800     2500   2500   2200
-#   Secret           0     20     70     200      375     550     1700   2500   2500
-#   Divine           0      8     20      70      125     180      470   1800   2350
-#   Exotic           0      2      8      25       40      55       55    400   1300
-#   Admin            0      0      2       5       10      15       25     50    100 (1%)
+#   Mythic          10     70    300     700     1250    1800     2500   2500   2300
+#   Secret           0     20     70     200      375     550     1700   2500   2600
+#   Divine           0      8     20      70      125     180      470   1800   3450
+#   Exotic           0      2     10      30       50      70       80    450   100 (1%)
 #   TierId       "common" "rare" "epic" "legendary" "elite" "mythic" "secret" "divine" "exotic"
 #   Prix suggéré   300$  1500$ 10000$  50000$    250000$    1M$     20M$   400M$   10B$
 #   (1M = 1 000 000 / 1Md = 1 000M / 1B = 1Md / 1T = 1 000Md / 1Qa = 1 000T)
@@ -38,8 +37,9 @@ using { /Verse.org/Simulation }
 # prix entre les deux était trop grand). Rien ne t'empêche d'ajouter encore
 # d'autres paliers de la même façon : chaque pack_slot_device est indépendant.
 #
-# Le pack "exotic" (le plus cher) a exactement 1% de chance de donner une
-# carte Admin, le reste de la progression monte en douceur avant ça.
+# Exotic est la rareté ultime (pas d'Admin). Le pack "exotic" (le plus cher)
+# a exactement 1% de chance de donner une carte Exotic ; les autres packs en
+# donnent une chance minime en bonus, le reste monte en douceur avant ça.
 #
 # Limite : un emplacement UEFN est un point fixe sur la map (pas une vraie
 # position libre choisie par le joueur, ce qui demanderait un système
@@ -90,9 +90,6 @@ pack_slot_device := class(creative_device):
     @editable
     ExoticWeight : int = 0
 
-    @editable
-    AdminWeight : int = 0
-
     # Bonus ajouté aux raretés non-Common par niveau de chance du joueur.
     @editable
     LuckWeightPerLevel : int = 5
@@ -130,7 +127,6 @@ pack_slot_device := class(creative_device):
             rarity_weight{Rarity := card_rarity.Secret, Weight := SecretWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Divine, Weight := DivineWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Exotic, Weight := ExoticWeight + LuckBonus}
-            rarity_weight{Rarity := card_rarity.Admin, Weight := AdminWeight + LuckBonus}
 
     OpenPack(Player : player)<suspends> : void =
         set Occupied = true
