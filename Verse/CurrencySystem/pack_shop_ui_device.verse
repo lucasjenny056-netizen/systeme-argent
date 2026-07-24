@@ -23,6 +23,10 @@ pack_shop_ui_device := class(creative_device):
     @editable
     PackCost : int = 100
 
+    # Doit correspondre au TierId du pack_slot_device où ce pack sera ouvert.
+    @editable
+    TierId : string = "basic"
+
     var OpenUI : [player]canvas = map{}
 
     OnBegin<override>()<suspends> : void =
@@ -64,7 +68,7 @@ pack_shop_ui_device := class(creative_device):
         Player := WParam.Player
         Spent : logic = Manager.TrySpend(Player, PackCost)
         if (Spent?):
-            Catalog.GrantPack(Player, 1)
+            Catalog.GrantPack(Player, TierId, 1)
 
     OnCloseClicked(WParam : widget_message) : void =
         CloseShop(WParam.Player)

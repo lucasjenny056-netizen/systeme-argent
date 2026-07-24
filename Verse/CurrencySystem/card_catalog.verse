@@ -56,13 +56,12 @@ card_catalog := class(creative_device):
     @editable
     LuckWeightPerLevel : int = 3
 
-    RollRarity(LuckLevel : int) : card_rarity =
-        Bonus := LuckLevel * LuckWeightPerLevel
+    RollRarity(BonusWeight : int) : card_rarity =
         CommonW := CommonWeight
-        RareW := RareWeight + Bonus
-        EpicW := EpicWeight + Bonus
-        LegendaryW := LegendaryWeight + Bonus
-        MythicW := MythicWeight + Bonus
+        RareW := RareWeight + BonusWeight
+        EpicW := EpicWeight + BonusWeight
+        LegendaryW := LegendaryWeight + BonusWeight
+        MythicW := MythicWeight + BonusWeight
         Roll := GetRandomInt(0, CommonW + RareW + EpicW + LegendaryW + MythicW - 1)
         if (Roll < CommonW):
             card_rarity.Common
@@ -75,13 +74,16 @@ card_catalog := class(creative_device):
         else:
             card_rarity.Mythic
 
-    # Tire une carte au hasard en tenant compte de la rareté et du niveau de chance.
+    # Tire une carte au hasard en tenant compte de la rareté, du niveau de
+    # chance du joueur ET du bonus propre au type de pack ouvert (un pack
+    # plus cher passe un PackBonusWeight plus élevé -> meilleures chances).
     # Renvoie une carte "vide" (CardId := "") si "Cards" n'a aucune entrée.
-    RollCard<public>(LuckLevel : int) : card_definition =
+    RollCard<public>(LuckLevel : int, PackBonusWeight : int) : card_definition =
         if (Cards.Length = 0):
             card_definition{}
         else:
-            WantedRarity := RollRarity(LuckLevel)
+            BonusWeight := LuckLevel * LuckWeightPerLevel + PackBonusWeight
+            WantedRarity := RollRarity(BonusWeight)
             Matches := for (Card : Cards, Card.Rarity = WantedRarity):
                 Card
             FinalPool := if (Matches.Length > 0) then Matches else Cards

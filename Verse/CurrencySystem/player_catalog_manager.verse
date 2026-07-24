@@ -22,8 +22,8 @@ player_catalog_manager := class(creative_device):
     @editable
     MaxLuckLevel : int = 10
 
-    # Nombre de packs non ouverts possédés par chaque joueur.
-    var PackCount : [player]int = map{}
+    # Nombre de packs non ouverts possédés par chaque joueur, par type de pack (TierId).
+    var PackCount : [player][string]int = map{}
 
     # Cartes possédées : nombre d'exemplaires par CardId.
     var Catalog : [player][string]int = map{}
@@ -40,7 +40,7 @@ player_catalog_manager := class(creative_device):
 
     OnPlayerAdded(Agent : agent) : void =
         if (Player := player[Agent]):
-            if (set PackCount[Player] = 0, set Catalog[Player] = map{}, set PendingCash[Player] = 0, set LuckLevel[Player] = 0):
+            if (set PackCount[Player] = map{}, set Catalog[Player] = map{}, set PendingCash[Player] = 0, set LuckLevel[Player] = 0):
                 true
 
     # Distribue l'argent passif toutes les secondes selon les cartes possédées par chacun.
@@ -68,8 +68,10 @@ player_catalog_manager := class(creative_device):
     GetPendingCash<public>(Player : player) : int =
         if (Pending := PendingCash[Player]) then Pending else 0
 
-    GetPackCount<public>(Player : player) : int =
-        if (Count := PackCount[Player]) then Count else 0
+    # Nombre de packs non ouverts d'un type (TierId) donné possédés par le joueur.
+    GetPackCount<public>(Player : player, TierId : string) : int =
+        PlayerPacks := if (Packs := PackCount[Player]) then Packs else map{}
+        if (Count := PlayerPacks[TierId]) then Count else 0
 
     GetLuckLevel<public>(Player : player) : int =
         if (Level := LuckLevel[Player]) then Level else 0
@@ -80,19 +82,27 @@ player_catalog_manager := class(creative_device):
     GetOwnedCards<public>(Player : player) : [string]int =
         if (Cards := Catalog[Player]) then Cards else map{}
 
-    # Ajoute Count pack(s) non ouverts à l'inventaire du joueur (achat réussi).
-    GrantPack<public>(Player : player, Count : int) : void =
+    # Ajoute Count pack(s) non ouverts d'un type (TierId) à l'inventaire du joueur (achat réussi).
+    GrantPack<public>(Player : player, TierId : string, Count : int) : void =
         if (Count > 0):
-            Current := GetPackCount(Player)
-            if (set PackCount[Player] = Current + Count):
-                true
+            Current := GetPackCount(Player, TierId)
+            PlayerPacks := if (Packs := PackCount[Player]) then Packs else map{}
+            var UpdatedPacks : [string]int = PlayerPacks
+            if (set UpdatedPacks[TierId] = Current + Count):
+                if (set PackCount[Player] = UpdatedPacks):
+                    true
 
-    # Consomme un pack si le joueur en possède au moins un. Renvoie true si consommé.
-    TryConsumePack<public>(Player : player) : logic =
-        Current := GetPackCount(Player)
+    # Consomme un pack d'un type (TierId) si le joueur en possède au moins un. Renvoie true si consommé.
+    TryConsumePack<public>(Player : player, TierId : string) : logic =
+        Current := GetPackCount(Player, TierId)
         if (Current > 0):
-            if (set PackCount[Player] = Current - 1):
-                true
+            PlayerPacks := if (Packs := PackCount[Player]) then Packs else map{}
+            var UpdatedPacks : [string]int = PlayerPacks
+            if (set UpdatedPacks[TierId] = Current - 1):
+                if (set PackCount[Player] = UpdatedPacks):
+                    true
+                else:
+                    false
             else:
                 false
         else:

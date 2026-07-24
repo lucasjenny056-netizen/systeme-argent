@@ -3,9 +3,13 @@ using { /Verse.org/Simulation }
 
 # Bouton pour acheter un pack. L'argent est déduit et le pack est ajouté à
 # l'inventaire de packs du joueur (à poser ensuite sur un pack_slot_device
-# pour l'ouvrir).
+# du MÊME TierId pour l'ouvrir).
 #
 # Câblage : Button Device + ce script, avec Manager et Catalog assignés.
+#
+# TierId identifie le type de pack (ex: "basic", "premium", "legendary") et
+# doit correspondre au TierId du pack_slot_device où ce pack sera ouvert
+# (c'est là que TierBonusWeight, le bonus de chances, est réglé).
 pack_shop_device := class(creative_device):
 
     @editable
@@ -20,6 +24,9 @@ pack_shop_device := class(creative_device):
     @editable
     PackCost : int = 100
 
+    @editable
+    TierId : string = "basic"
+
     OnBegin<override>()<suspends> : void =
         Button.InteractedWithEvent.Subscribe(OnInteracted)
 
@@ -27,4 +34,4 @@ pack_shop_device := class(creative_device):
         if (Player := player[Agent]):
             Spent : logic = Manager.TrySpend(Player, PackCost)
             if (Spent?):
-                Catalog.GrantPack(Player, 1)
+                Catalog.GrantPack(Player, TierId, 1)
