@@ -2,19 +2,17 @@ using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /Verse.org/Random }
 
-# Du plus fréquent au plus rare. Admin est la rareté ultime, uniquement
-# obtenable (à très faible chance) via le pack "exotic".
+# Du plus fréquent au plus rare. 9 raretés, une par palier de pack.
 card_rarity := enum:
     Common
-    Uncommon
     Rare
     Epic
     Legendary
+    Elite
     Mythic
     Secret
     Divine
     Exotic
-    Admin
 
 card_definition := struct<concrete>:
     CardId : string = ""
@@ -23,11 +21,9 @@ card_definition := struct<concrete>:
     # Argent généré par seconde tant que le joueur possède un exemplaire de cette carte.
     IncomeRate : int = 0
 
-# Paire rareté/poids : une table complète de 10 (une par rareté) est fournie
+# Paire rareté/poids : une table complète de 9 (une par rareté) est fournie
 # par CHAQUE pack_slot_device (voir ce fichier), pas par card_catalog. Ça
-# permet à chaque type de pack d'avoir ses propres chances exactes (ex: le
-# pack de base donne 0.5% de Legendary, le pack premium 2% de Legendary +
-# 0.5% de Divine, etc.) plutôt qu'un simple bonus partagé.
+# permet à chaque type de pack d'avoir ses propres chances exactes.
 rarity_weight := struct<concrete>:
     Rarity : card_rarity = card_rarity.Common
     Weight : int = 0
@@ -38,29 +34,27 @@ rarity_weight := struct<concrete>:
 #
 # Exemples fournis pour montrer le format attendu (un par rareté) :
 #   skibidi_common   / Common    / 1 $/s
-#   sigma_uncommon   / Uncommon  / 2 $/s
 #   gyatt_rare       / Rare      / 4 $/s
 #   rizz_epic        / Epic      / 8 $/s
 #   gyatt_legendary  / Legendary / 20 $/s
-#   ohio_mythic      / Mythic    / 50 $/s
-#   fanum_secret     / Secret    / 120 $/s
-#   livvy_divine     / Divine    / 300 $/s
-#   sussy_exotic     / Exotic    / 750 $/s
-#   owner_admin      / Admin     / 2000 $/s
+#   sigma_elite      / Elite     / 40 $/s
+#   ohio_mythic      / Mythic    / 80 $/s
+#   fanum_secret     / Secret    / 150 $/s
+#   livvy_divine     / Divine    / 350 $/s
+#   sussy_exotic     / Exotic    / 800 $/s
 card_catalog := class(creative_device):
 
     @editable
     Cards : []card_definition = array:
         card_definition{CardId := "skibidi_common", DisplayName := "Skibidi Toilet", Rarity := card_rarity.Common, IncomeRate := 1}
-        card_definition{CardId := "sigma_uncommon", DisplayName := "Sigma Grindset", Rarity := card_rarity.Uncommon, IncomeRate := 2}
         card_definition{CardId := "gyatt_rare", DisplayName := "Gyatt Rizzler", Rarity := card_rarity.Rare, IncomeRate := 4}
         card_definition{CardId := "rizz_epic", DisplayName := "Unspeakable Rizz", Rarity := card_rarity.Epic, IncomeRate := 8}
         card_definition{CardId := "gyatt_legendary", DisplayName := "Gyatt Supreme", Rarity := card_rarity.Legendary, IncomeRate := 20}
-        card_definition{CardId := "ohio_mythic", DisplayName := "Only in Ohio", Rarity := card_rarity.Mythic, IncomeRate := 50}
-        card_definition{CardId := "fanum_secret", DisplayName := "Fanum Tax Collector", Rarity := card_rarity.Secret, IncomeRate := 120}
-        card_definition{CardId := "livvy_divine", DisplayName := "Certified Divine", Rarity := card_rarity.Divine, IncomeRate := 300}
-        card_definition{CardId := "sussy_exotic", DisplayName := "Sussy Baka Imposter", Rarity := card_rarity.Exotic, IncomeRate := 750}
-        card_definition{CardId := "owner_admin", DisplayName := "Server Owner", Rarity := card_rarity.Admin, IncomeRate := 2000}
+        card_definition{CardId := "sigma_elite", DisplayName := "Sigma Elite", Rarity := card_rarity.Elite, IncomeRate := 40}
+        card_definition{CardId := "ohio_mythic", DisplayName := "Only in Ohio", Rarity := card_rarity.Mythic, IncomeRate := 80}
+        card_definition{CardId := "fanum_secret", DisplayName := "Fanum Tax Collector", Rarity := card_rarity.Secret, IncomeRate := 150}
+        card_definition{CardId := "livvy_divine", DisplayName := "Certified Divine", Rarity := card_rarity.Divine, IncomeRate := 350}
+        card_definition{CardId := "sussy_exotic", DisplayName := "Sussy Baka Imposter", Rarity := card_rarity.Exotic, IncomeRate := 800}
 
     RollRarity(Weights : []rarity_weight) : card_rarity =
         var TotalWeight : int = 0

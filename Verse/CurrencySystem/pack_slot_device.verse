@@ -10,43 +10,29 @@ using { /Verse.org/Simulation }
 # type-là.
 #
 # Chaque instance de ce device définit SA PROPRE table de probabilités
-# (les 10 champs XxxWeight ci-dessous, un par rareté). Règle-les pour qu'ils
+# (les 9 champs XxxWeight ci-dessous, un par rareté). Règle-les pour qu'ils
 # totalisent 10000 : un poids = un pourcentage x100 (ex: 50 = 0.5%, 200 = 2%).
 # LuckWeightPerLevel ajoute un petit bonus (aux raretés non-Common) par
 # niveau de chance du joueur, en plus de la table du pack.
 #
-# Chaque palier a un PLAFOND : rien au-dessus n'est possible (poids à 0), et
-# la rareté du plafond reste rare (quelques %). Seul le dernier pack
-# ("exotic") peut donner Admin, à 0.05% pile. Progression sur 9 packs, du
-# moins cher au plus cher (TierId entre parenthèses). Colonnes = valeurs à
-# copier dans les 10 champs XxxWeight de chaque pack_slot_device (elles
-# totalisent toutes 10000) :
+# Règle : un pack ne peut JAMAIS donner une carte de rareté supérieure à son
+# propre nom (poids à 0 au-dessus), mais peut donner toutes les raretés en
+# dessous. Table complète (poids sur 10000, colonnes = packs, du moins cher
+# au plus cher) :
 #
-#                Commun  Rare   Épique  Légend.  Elite  Mythique Secret  Divin  Exotic
-#   Common        6000   3000   1000     300      100       0       0      0      0
-#   Uncommon      2500   3000   2500    1200      600     200      50      0      0
-#   Rare           800   2200   2800    2500     1700     800     300    100     20
-#   Epic           200   1300   2000    2800     2800    1800    1000    400    100
-#   Legendary       500   500    900    1700     2500    2500    2000   1000    400
-#   Mythic (plaf.)   0      0    300     700     1200    2300    2500   1800   1000
-#   Secret            0     0    500     300      500    1400    2500   2500   1800
-#   Divine             0     0      0     500      100     200     450   2400   2675
-#   Exotic              0     0      0       0      500     800    1200   1800   4000
-#   Admin                0     0      0       0        0       0       0      0      5 (0.05%)
-#   TierId       "common" "rare" "epic" "legendary" "elite" "mythic" "secret" "divine" "exotic"
-#   Prix suggéré   300$  1500$ 10000$  50000$    250000$    1M$     20M$   400M$   10B$
+#              Commun  Rare   Épique Légend. Elite  Mythique Secret Divin  Exotic
+#   Common      7000      0      0      0      0        0       0      0      0
+#   Rare        2000   6500      0      0      0        0       0      0      0
+#   Epic         800   2500   6000      0      0        0       0      0      0
+#   Legendary    200    800   2500   6000      0        0       0      0      0
+#   Elite          0    200   1000   2500   6000        0       0      0      0
+#   Mythic         0      0    500   1000   2500     6000    7000      0      0
+#   Secret         0      0      0    500   1000     2500    2000   7000      0
+#   Divine         0      0      0      0    500     1000     800   2500   7500
+#   Exotic         0      0      0      0      0      500     200    500   2500
+#   TierId    "common" "rare" "epic" "legendary" "elite" "mythic" "secret" "divine" "exotic"
+#   Prix       300$  1500$ 10000$  50000$  250000$   1M$    20M$   400M$   10B$
 #   (1M = 1 000 000 / 1Md = 1 000M / 1B = 1Md / 1T = 1 000Md / 1Qa = 1 000T)
-#
-# Détail des plafonds : Common ne peut avoir que jusqu'à Legendary (5% pile,
-# rien au-dessus), Rare aussi jusqu'à Legendary (5% pile, pas de Mythic),
-# Epic jusqu'à Secret (5%), Legendary jusqu'à Divine (5%), Elite jusqu'à
-# Exotic (5%). Les paliers Mythic/Secret/Divine augmentent progressivement
-# la chance d'Exotic (8%, 12%, 18%) sans jamais donner Admin. Seul "exotic"
-# (le plus cher) peut donner Admin, à 0.05%.
-#
-# "Elite" est un palier intermédiaire entre Legendary et Mythic (l'écart de
-# prix entre les deux était trop grand). Rien ne t'empêche d'ajouter encore
-# d'autres paliers de la même façon : chaque pack_slot_device est indépendant.
 #
 # Limite : un emplacement UEFN est un point fixe sur la map (pas une vraie
 # position libre choisie par le joueur, ce qui demanderait un système
@@ -71,19 +57,19 @@ pack_slot_device := class(creative_device):
     TierId : string = "common"
 
     @editable
-    CommonWeight : int = 6000
+    CommonWeight : int = 7000
 
     @editable
-    UncommonWeight : int = 2500
+    RareWeight : int = 2000
 
     @editable
-    RareWeight : int = 800
+    EpicWeight : int = 800
 
     @editable
-    EpicWeight : int = 200
+    LegendaryWeight : int = 200
 
     @editable
-    LegendaryWeight : int = 500
+    EliteWeight : int = 0
 
     @editable
     MythicWeight : int = 0
@@ -96,9 +82,6 @@ pack_slot_device := class(creative_device):
 
     @editable
     ExoticWeight : int = 0
-
-    @editable
-    AdminWeight : int = 0
 
     # Bonus ajouté aux raretés non-Common par niveau de chance du joueur.
     @editable
@@ -129,15 +112,14 @@ pack_slot_device := class(creative_device):
         LuckBonus := Catalog.GetLuckLevel(Player) * LuckWeightPerLevel
         array:
             rarity_weight{Rarity := card_rarity.Common, Weight := CommonWeight}
-            rarity_weight{Rarity := card_rarity.Uncommon, Weight := UncommonWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Rare, Weight := RareWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Epic, Weight := EpicWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Legendary, Weight := LegendaryWeight + LuckBonus}
+            rarity_weight{Rarity := card_rarity.Elite, Weight := EliteWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Mythic, Weight := MythicWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Secret, Weight := SecretWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Divine, Weight := DivineWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Exotic, Weight := ExoticWeight + LuckBonus}
-            rarity_weight{Rarity := card_rarity.Admin, Weight := AdminWeight + LuckBonus}
 
     OpenPack(Player : player)<suspends> : void =
         set Occupied = true
