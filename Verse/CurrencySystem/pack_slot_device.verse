@@ -15,23 +15,26 @@ using { /Verse.org/Simulation }
 # LuckWeightPerLevel ajoute un petit bonus (aux raretés non-Common) par
 # niveau de chance du joueur, en plus de la table du pack.
 #
-# Exemple de progression sur 3 packs (à copier dans les propriétés de
-# chaque pack_slot_device correspondant, valeurs qui totalisent 10000) :
+# Progression suggérée sur 8 packs, du moins cher au plus cher (TierId entre
+# parenthèses). Colonnes = valeurs à copier dans les 10 champs XxxWeight de
+# chaque pack_slot_device (elles totalisent toutes 10000) :
 #
-#   Pack "basic" (le moins cher) :
-#     Common 6000 / Uncommon 2500 / Rare 1200 / Epic 250 / Legendary 50
-#     Mythic 0 / Secret 0 / Divine 0 / Exotic 0 / Admin 0
-#     -> 0.5% de Legendary, rien au-dessus.
+#                Commun  Rare   Épique  Légend. Mythique Secret  Divin  Exotic
+#   Common        7000   4000   2000     800     200      50      0      0
+#   Uncommon      2000   3000   2500    1500     700     200     50      0
+#   Rare           800   2000   2500    2200    1500     700    200     50
+#   Epic           150    700   1800    2500    2500    1800    700    300
+#   Legendary       40    200    800    2000    2500    2500   1800   1200
+#   Mythic          10     70    300     700    1800    2500   2500   2200
+#   Secret           0     20     70     200     550    1700   2500   2500
+#   Divine           0      8     20      70     180     470   1800   2350
+#   Exotic           0      2      8      25      55      55    400   1300
+#   Admin            0      0      2       5      15      25     50    100 (1%)
+#   TierId       "common" "rare" "epic" "legendary" "mythic" "secret" "divine" "exotic"
+#   Prix suggéré   100$   300$   750$   1500$   3000$   6000$  12000$ 25000$
 #
-#   Pack "premium" (intermédiaire) :
-#     Common 4000 / Uncommon 3000 / Rare 2000 / Epic 700 / Legendary 200
-#     Mythic 40 / Secret 10 / Divine 50 / Exotic 0 / Admin 0
-#     -> 2% de Legendary, 0.5% de Divine.
-#
-#   Pack "ultimate" (le plus cher) :
-#     Common 1000 / Uncommon 2000 / Rare 2400 / Epic 2000 / Legendary 1200
-#     Mythic 700 / Secret 400 / Divine 100 / Exotic 100 / Admin 100
-#     -> 1% d'Admin, et tout le reste bien meilleur aussi.
+# Le pack "exotic" (le plus cher) a exactement 1% de chance de donner une
+# carte Admin, le reste de la progression monte en douceur avant ça.
 #
 # Limite : un emplacement UEFN est un point fixe sur la map (pas une vraie
 # position libre choisie par le joueur, ce qui demanderait un système
@@ -53,25 +56,25 @@ pack_slot_device := class(creative_device):
     CardCatalog : card_catalog = card_catalog{}
 
     @editable
-    TierId : string = "basic"
+    TierId : string = "common"
 
     @editable
-    CommonWeight : int = 6000
+    CommonWeight : int = 7000
 
     @editable
-    UncommonWeight : int = 2500
+    UncommonWeight : int = 2000
 
     @editable
-    RareWeight : int = 1200
+    RareWeight : int = 800
 
     @editable
-    EpicWeight : int = 250
+    EpicWeight : int = 150
 
     @editable
-    LegendaryWeight : int = 50
+    LegendaryWeight : int = 40
 
     @editable
-    MythicWeight : int = 0
+    MythicWeight : int = 10
 
     @editable
     SecretWeight : int = 0

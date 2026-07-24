@@ -25,7 +25,7 @@ pack_shop_ui_device := class(creative_device):
 
     # Doit correspondre au TierId du pack_slot_device où ce pack sera ouvert.
     @editable
-    TierId : string = "basic"
+    TierId : string = "common"
 
     var OpenUI : [player]canvas = map{}
 

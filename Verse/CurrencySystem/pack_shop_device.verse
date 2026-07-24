@@ -25,7 +25,7 @@ pack_shop_device := class(creative_device):
     PackCost : int = 100
 
     @editable
-    TierId : string = "basic"
+    TierId : string = "common"
 
     OnBegin<override>()<suspends> : void =
         Button.InteractedWithEvent.Subscribe(OnInteracted)
