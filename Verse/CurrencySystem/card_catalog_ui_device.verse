@@ -40,6 +40,7 @@ card_catalog_ui_device := class(creative_device):
             CloseButton := button_quiet{DefaultText := DynamicText("Fermer")}
 
             ListBox := stack_box:
+                Orientation := orientation.Vertical
                 Slots := CardLines
 
             RootCanvas := canvas:

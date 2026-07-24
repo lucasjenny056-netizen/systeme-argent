@@ -5,7 +5,7 @@ using { /Fortnite.com/UI }
 using { /UnrealEngine.com/Temporary/SpatialMath }
 
 # Affiche en permanence le solde et l'argent en attente de chaque joueur
-# en haut à gauche de l'écran.
+# en haut à gauche de l'écran (rafraîchi chaque seconde).
 #
 # Câblage : device vide + ce script, assigne Manager et Catalog.
 money_hud_device := class(creative_device):
@@ -21,8 +21,7 @@ money_hud_device := class(creative_device):
 
     OnBegin<override>()<suspends> : void =
         GetPlayspace().PlayerAddedEvent().Subscribe(OnPlayerAdded)
-        Manager.BalanceChanged.Subscribe(OnBalanceChanged)
-        spawn{ RefreshPendingLoop() }
+        spawn{ RefreshLoop() }
 
     OnPlayerAdded(Agent : agent) : void =
         if (Player := player[Agent]):
@@ -48,13 +47,11 @@ money_hud_device := class(creative_device):
             if (set PendingTexts[Player] = PendingText):
                 true
 
-    OnBalanceChanged(Player : player) : void =
-        if (Text := BalanceTexts[Player]):
-            Text.SetText(DynamicText("{Manager.GetBalance(Player)}$"))
-
-    RefreshPendingLoop()<suspends> : void =
+    RefreshLoop()<suspends> : void =
         loop:
             Sleep(1.0)
+            for (Player -> Text : BalanceTexts):
+                Text.SetText(DynamicText("{Manager.GetBalance(Player)}$"))
             for (Player -> Text : PendingTexts):
                 Pending := Catalog.GetPendingCash(Player)
                 Text.SetText(DynamicText("+{Pending}$ en attente"))
