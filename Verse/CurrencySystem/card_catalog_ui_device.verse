@@ -1,6 +1,8 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /UnrealEngine.com/Temporary/UI }
+using { /Fortnite.com/UI }
+using { /UnrealEngine.com/Temporary/SpatialMath }
 
 # Bouton qui ouvre une interface listant les cartes possédées par le
 # joueur (nom, quantité, revenu généré).
@@ -33,9 +35,9 @@ card_catalog_ui_device := class(creative_device):
             CardLines := for (CardId -> Count : OwnedCards):
                 Card := CardCatalog.FindCard(CardId)
                 stack_box_slot:
-                    Widget := text_block{DefaultText := "{Card.DisplayName} x{Count} (+{Card.IncomeRate * Count}$/s)"}
+                    Widget := text_block{DefaultText := DynamicText("{Card.DisplayName} x{Count} (+{Card.IncomeRate * Count}$/s)")}
 
-            CloseButton := button{DefaultText := "Fermer"}
+            CloseButton := button_quiet{DefaultText := DynamicText("Fermer")}
 
             ListBox := stack_box:
                 Slots := CardLines
@@ -43,7 +45,7 @@ card_catalog_ui_device := class(creative_device):
             RootCanvas := canvas:
                 Slots := array:
                     canvas_slot:
-                        Widget := text_block{DefaultText := "Ma collection"}
+                        Widget := text_block{DefaultText := DynamicText("Ma collection")}
                         Anchors := anchors{Minimum := vector2{X := 0.3, Y := 0.15}, Maximum := vector2{X := 0.7, Y := 0.22}}
                     canvas_slot:
                         Widget := ListBox
@@ -58,8 +60,8 @@ card_catalog_ui_device := class(creative_device):
 
             CloseButton.OnClick().Subscribe(OnCloseClicked)
 
-    OnCloseClicked(Agent : agent) : void =
-        if (Player := player[Agent]):
-            if (PlayerUI := GetPlayerUI[Player]):
-                if (RootCanvas := OpenUI[Player]):
-                    PlayerUI.RemoveWidget(RootCanvas)
+    OnCloseClicked(WParam : widget_message) : void =
+        Player := WParam.Player
+        if (PlayerUI := GetPlayerUI[Player]):
+            if (RootCanvas := OpenUI[Player]):
+                PlayerUI.RemoveWidget(RootCanvas)

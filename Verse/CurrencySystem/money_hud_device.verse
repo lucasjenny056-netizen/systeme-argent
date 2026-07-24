@@ -1,6 +1,8 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /UnrealEngine.com/Temporary/UI }
+using { /Fortnite.com/UI }
+using { /UnrealEngine.com/Temporary/SpatialMath }
 
 # Affiche en permanence le solde et l'argent en attente de chaque joueur
 # en haut à gauche de l'écran.
@@ -28,8 +30,8 @@ money_hud_device := class(creative_device):
 
     BuildHud(Player : player) : void =
         if (PlayerUI := GetPlayerUI[Player]):
-            BalanceText := text_block{DefaultText := "{Manager.GetBalance(Player)}$"}
-            PendingText := text_block{DefaultText := ""}
+            BalanceText := text_block{DefaultText := DynamicText("{Manager.GetBalance(Player)}$")}
+            PendingText := text_block{DefaultText := DynamicText("")}
 
             RootCanvas := canvas:
                 Slots := array:
@@ -48,11 +50,11 @@ money_hud_device := class(creative_device):
 
     OnBalanceChanged(Player : player) : void =
         if (Text := BalanceTexts[Player]):
-            Text.SetText("{Manager.GetBalance(Player)}$")
+            Text.SetText(DynamicText("{Manager.GetBalance(Player)}$"))
 
     RefreshPendingLoop()<suspends> : void =
         loop:
             Sleep(1.0)
             for (Player -> Text : PendingTexts):
                 Pending := Catalog.GetPendingCash(Player)
-                Text.SetText("+{Pending}$ en attente")
+                Text.SetText(DynamicText("+{Pending}$ en attente"))

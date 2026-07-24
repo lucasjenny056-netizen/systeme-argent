@@ -1,6 +1,8 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /UnrealEngine.com/Temporary/UI }
+using { /Fortnite.com/UI }
+using { /UnrealEngine.com/Temporary/SpatialMath }
 
 # Bouton qui ouvre une interface d'amélioration de chance (niveau actuel +
 # coût du prochain niveau + bouton), au lieu d'améliorer directement
@@ -27,14 +29,14 @@ luck_upgrade_ui_device := class(creative_device):
 
     OpenUpgradeUI(Player : player) : void =
         if (PlayerUI := GetPlayerUI[Player]):
-            LevelText := text_block{DefaultText := BuildLevelText(Player)}
-            UpgradeButton := button{DefaultText := "Améliorer"}
-            CloseButton := button{DefaultText := "Fermer"}
+            LevelText := text_block{DefaultText := DynamicText(BuildLevelText(Player))}
+            UpgradeButton := button_loud{DefaultText := DynamicText("Améliorer")}
+            CloseButton := button_quiet{DefaultText := DynamicText("Fermer")}
 
             RootCanvas := canvas:
                 Slots := array:
                     canvas_slot:
-                        Widget := text_block{DefaultText := "Chance"}
+                        Widget := text_block{DefaultText := DynamicText("Chance")}
                         Anchors := anchors{Minimum := vector2{X := 0.35, Y := 0.30}, Maximum := vector2{X := 0.65, Y := 0.38}}
                     canvas_slot:
                         Widget := LevelText
@@ -60,15 +62,15 @@ luck_upgrade_ui_device := class(creative_device):
         Cost := Catalog.GetNextUpgradeCost(Player)
         "Niveau {Level} - prochain niveau : {Cost}$"
 
-    OnUpgradeClicked(Agent : agent) : void =
-        if (Player := player[Agent]):
-            Upgraded : logic = Catalog.TryUpgradeLuck(Player)
-            if (Upgraded?):
-                if (Text := LevelTexts[Player]):
-                    Text.SetText(BuildLevelText(Player))
+    OnUpgradeClicked(WParam : widget_message) : void =
+        Player := WParam.Player
+        Upgraded : logic = Catalog.TryUpgradeLuck(Player)
+        if (Upgraded?):
+            if (Text := LevelTexts[Player]):
+                Text.SetText(DynamicText(BuildLevelText(Player)))
 
-    OnCloseClicked(Agent : agent) : void =
-        if (Player := player[Agent]):
-            if (PlayerUI := GetPlayerUI[Player]):
-                if (RootCanvas := OpenUI[Player]):
-                    PlayerUI.RemoveWidget(RootCanvas)
+    OnCloseClicked(WParam : widget_message) : void =
+        Player := WParam.Player
+        if (PlayerUI := GetPlayerUI[Player]):
+            if (RootCanvas := OpenUI[Player]):
+                PlayerUI.RemoveWidget(RootCanvas)

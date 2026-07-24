@@ -1,6 +1,8 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /UnrealEngine.com/Temporary/UI }
+using { /Fortnite.com/UI }
+using { /UnrealEngine.com/Temporary/SpatialMath }
 
 # Bouton qui ouvre une interface d'achat de pack, au lieu d'acheter
 # directement (contrairement à pack_shop_device).
@@ -32,14 +34,14 @@ pack_shop_ui_device := class(creative_device):
 
     OpenShop(Player : player) : void =
         if (PlayerUI := GetPlayerUI[Player]):
-            PriceText := text_block{DefaultText := "Prix : {PackCost}$"}
-            BuyButton := button{DefaultText := "Acheter un pack"}
-            CloseButton := button{DefaultText := "Fermer"}
+            PriceText := text_block{DefaultText := DynamicText("Prix : {PackCost}$")}
+            BuyButton := button_loud{DefaultText := DynamicText("Acheter un pack")}
+            CloseButton := button_quiet{DefaultText := DynamicText("Fermer")}
 
             RootCanvas := canvas:
                 Slots := array:
                     canvas_slot:
-                        Widget := text_block{DefaultText := "Boutique de packs"}
+                        Widget := text_block{DefaultText := DynamicText("Boutique de packs")}
                         Anchors := anchors{Minimum := vector2{X := 0.35, Y := 0.30}, Maximum := vector2{X := 0.65, Y := 0.38}}
                     canvas_slot:
                         Widget := PriceText
@@ -58,15 +60,14 @@ pack_shop_ui_device := class(creative_device):
             BuyButton.OnClick().Subscribe(OnBuyClicked)
             CloseButton.OnClick().Subscribe(OnCloseClicked)
 
-    OnBuyClicked(Agent : agent) : void =
-        if (Player := player[Agent]):
-            Spent : logic = Manager.TrySpend(Player, PackCost)
-            if (Spent?):
-                Catalog.GrantPack(Player, 1)
+    OnBuyClicked(WParam : widget_message) : void =
+        Player := WParam.Player
+        Spent : logic = Manager.TrySpend(Player, PackCost)
+        if (Spent?):
+            Catalog.GrantPack(Player, 1)
 
-    OnCloseClicked(Agent : agent) : void =
-        if (Player := player[Agent]):
-            CloseShop(Player)
+    OnCloseClicked(WParam : widget_message) : void =
+        CloseShop(WParam.Player)
 
     CloseShop(Player : player) : void =
         if (PlayerUI := GetPlayerUI[Player]):
