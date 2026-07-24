@@ -31,7 +31,7 @@ using { /Verse.org/Simulation }
 #   Exotic           0      2      8      25      55      55    400   1300
 #   Admin            0      0      2       5      15      25     50    100 (1%)
 #   TierId       "common" "rare" "epic" "legendary" "mythic" "secret" "divine" "exotic"
-#   Prix suggéré   300$   750$  2000$  10000$  250000$   10M$    1T$    1Qa$
+#   Prix suggéré   300$   750$ 10000$  50000$    1M$     20M$   400M$   1Qa$
 #   (1M = 1 000 000 / 1Md = 1 000M / 1T = 1 000Md / 1Qa = 1 000T)
 #
 # Le pack "exotic" (le plus cher) a exactement 1% de chance de donner une
