@@ -74,6 +74,12 @@ player_catalog_manager := class(creative_device):
     GetLuckLevel<public>(Player : player) : int =
         if (Level := LuckLevel[Player]) then Level else 0
 
+    GetNextUpgradeCost<public>(Player : player) : int =
+        LuckUpgradeBaseCost * (GetLuckLevel(Player) + 1)
+
+    GetOwnedCards<public>(Player : player) : [string]int =
+        if (Cards := Catalog[Player]) then Cards else map{}
+
     # Ajoute Count pack(s) non ouverts à l'inventaire du joueur (achat réussi).
     GrantPack<public>(Player : player, Count : int) : void =
         if (Count > 0):
