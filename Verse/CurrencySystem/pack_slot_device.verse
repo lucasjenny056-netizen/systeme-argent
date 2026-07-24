@@ -10,36 +10,42 @@ using { /Verse.org/Simulation }
 # type-là.
 #
 # Chaque instance de ce device définit SA PROPRE table de probabilités
-# (les 9 champs XxxWeight ci-dessous, un par rareté). Règle-les pour qu'ils
+# (les 10 champs XxxWeight ci-dessous, un par rareté). Règle-les pour qu'ils
 # totalisent 10000 : un poids = un pourcentage x100 (ex: 50 = 0.5%, 200 = 2%).
 # LuckWeightPerLevel ajoute un petit bonus (aux raretés non-Common) par
 # niveau de chance du joueur, en plus de la table du pack.
 #
-# Progression suggérée sur 9 packs, du moins cher au plus cher (TierId entre
-# parenthèses). Colonnes = valeurs à copier dans les 9 champs XxxWeight de
-# chaque pack_slot_device (elles totalisent toutes 10000) :
+# Chaque palier a un PLAFOND : rien au-dessus n'est possible (poids à 0), et
+# la rareté du plafond reste rare (quelques %). Seul le dernier pack
+# ("exotic") peut donner Admin, à 0.05% pile. Progression sur 9 packs, du
+# moins cher au plus cher (TierId entre parenthèses). Colonnes = valeurs à
+# copier dans les 10 champs XxxWeight de chaque pack_slot_device (elles
+# totalisent toutes 10000) :
 #
 #                Commun  Rare   Épique  Légend.  Elite  Mythique Secret  Divin  Exotic
-#   Common        7000   4000   2000     800      500     200      50      0      0
-#   Uncommon      2000   3000   2500    1500     1100     700      200     50      0
-#   Rare           800   2000   2500    2200     1850    1500      700    200     50
-#   Epic           150    700   1800    2500     2500    2500     1800    700    300
-#   Legendary       40    200    800    2000     2250    2500     2500   1800   1200
-#   Mythic          10     70    300     700     1250    1800     2500   2500   2300
-#   Secret           0     20     70     200      375     550     1700   2500   2600
-#   Divine           0      8     20      70      125     180      470   1800   3450
-#   Exotic           0      2     10      30       50      70       80    450   100 (1%)
+#   Common        6000   3000   1000     300      100       0       0      0      0
+#   Uncommon      2500   3000   2500    1200      600     200      50      0      0
+#   Rare           800   2200   2800    2500     1700     800     300    100     20
+#   Epic           200   1000   2000    2800     2800    1800    1000    400    100
+#   Legendary       500   300    900    1700     2500    2500    2000   1000    400
+#   Mythic (plaf.)   0    500    300     700     1200    2300    2500   1800   1000
+#   Secret            0     0    500     300      500    1400    2500   2500   1800
+#   Divine             0     0      0     500      100     200     450   2400   2675
+#   Exotic              0     0      0       0      500     800    1200   1800   4000
+#   Admin                0     0      0       0        0       0       0      0      5 (0.05%)
 #   TierId       "common" "rare" "epic" "legendary" "elite" "mythic" "secret" "divine" "exotic"
 #   Prix suggéré   300$  1500$ 10000$  50000$    250000$    1M$     20M$   400M$   10B$
 #   (1M = 1 000 000 / 1Md = 1 000M / 1B = 1Md / 1T = 1 000Md / 1Qa = 1 000T)
 #
+# Détail des plafonds : Common ne peut avoir que jusqu'à Legendary (5% pile),
+# Rare jusqu'à Mythic (5%), Epic jusqu'à Secret (5%), Legendary jusqu'à
+# Divine (5%), Elite jusqu'à Exotic (5%). Les paliers Mythic/Secret/Divine
+# augmentent progressivement la chance d'Exotic (8%, 12%, 18%) sans jamais
+# donner Admin. Seul "exotic" (le plus cher) peut donner Admin, à 0.05%.
+#
 # "Elite" est un palier intermédiaire entre Legendary et Mythic (l'écart de
 # prix entre les deux était trop grand). Rien ne t'empêche d'ajouter encore
 # d'autres paliers de la même façon : chaque pack_slot_device est indépendant.
-#
-# Exotic est la rareté ultime (pas d'Admin). Le pack "exotic" (le plus cher)
-# a exactement 1% de chance de donner une carte Exotic ; les autres packs en
-# donnent une chance minime en bonus, le reste monte en douceur avant ça.
 #
 # Limite : un emplacement UEFN est un point fixe sur la map (pas une vraie
 # position libre choisie par le joueur, ce qui demanderait un système
@@ -64,22 +70,22 @@ pack_slot_device := class(creative_device):
     TierId : string = "common"
 
     @editable
-    CommonWeight : int = 7000
+    CommonWeight : int = 6000
 
     @editable
-    UncommonWeight : int = 2000
+    UncommonWeight : int = 2500
 
     @editable
     RareWeight : int = 800
 
     @editable
-    EpicWeight : int = 150
+    EpicWeight : int = 200
 
     @editable
-    LegendaryWeight : int = 40
+    LegendaryWeight : int = 500
 
     @editable
-    MythicWeight : int = 10
+    MythicWeight : int = 0
 
     @editable
     SecretWeight : int = 0
@@ -89,6 +95,9 @@ pack_slot_device := class(creative_device):
 
     @editable
     ExoticWeight : int = 0
+
+    @editable
+    AdminWeight : int = 0
 
     # Bonus ajouté aux raretés non-Common par niveau de chance du joueur.
     @editable
@@ -127,6 +136,7 @@ pack_slot_device := class(creative_device):
             rarity_weight{Rarity := card_rarity.Secret, Weight := SecretWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Divine, Weight := DivineWeight + LuckBonus}
             rarity_weight{Rarity := card_rarity.Exotic, Weight := ExoticWeight + LuckBonus}
+            rarity_weight{Rarity := card_rarity.Admin, Weight := AdminWeight + LuckBonus}
 
     OpenPack(Player : player)<suspends> : void =
         set Occupied = true
