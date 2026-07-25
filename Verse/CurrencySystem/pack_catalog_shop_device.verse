@@ -130,6 +130,23 @@ pack_catalog_shop_device := class(creative_device):
         if (Spent?):
             Catalog.GrantPack(Player, TierId, 1)
 
+    # Construit une "carte" verticale compacte : texte (prix + odds) + bouton d'achat.
+    BuildCard(Name : string, Price : int, Slot : pack_slot_device, BuyButton : button_loud) : stack_box =
+        stack_box:
+            Orientation := orientation.Vertical
+            Slots := array:
+                stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText(Name, Price, Slot))}}
+                stack_box_slot{Widget := BuyButton}
+
+    # Assemble 3 cartes côte à côte (une rangée du tableau 3x3).
+    BuildRow(CardA : stack_box, CardB : stack_box, CardC : stack_box) : stack_box =
+        stack_box:
+            Orientation := orientation.Horizontal
+            Slots := array:
+                stack_box_slot{Widget := CardA}
+                stack_box_slot{Widget := CardB}
+                stack_box_slot{Widget := CardC}
+
     OpenCatalog(Player : player) : void =
         if (PlayerUI := GetPlayerUI[Player]):
             CloseButton := button_quiet{DefaultText := DynamicText("Fermer")}
@@ -143,33 +160,30 @@ pack_catalog_shop_device := class(creative_device):
             DivineButton := button_loud{DefaultText := DynamicText("Acheter Divine")}
             ExoticButton := button_loud{DefaultText := DynamicText("Acheter Exotic")}
 
-            RootStack := stack_box:
+            # Grille 3x3 : 3 rangées de 3 packs, du moins cher au plus cher.
+            Row1 := BuildRow(BuildCard("Common", CommonPrice, CommonSlot, CommonButton), BuildCard("Rare", RarePrice, RareSlot, RareButton), BuildCard("Epic", EpicPrice, EpicSlot, EpicButton))
+            Row2 := BuildRow(BuildCard("Legendary", LegendaryPrice, LegendarySlot, LegendaryButton), BuildCard("Elite", ElitePrice, EliteSlot, EliteButton), BuildCard("Mythic", MythicPrice, MythicSlot, MythicButton))
+            Row3 := BuildRow(BuildCard("Secret", SecretPrice, SecretSlot, SecretButton), BuildCard("Divine", DivinePrice, DivineSlot, DivineButton), BuildCard("Exotic", ExoticPrice, ExoticSlot, ExoticButton))
+
+            Grid := stack_box:
                 Orientation := orientation.Vertical
                 Slots := array:
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Common", CommonPrice, CommonSlot))}}
-                    stack_box_slot{Widget := CommonButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Rare", RarePrice, RareSlot))}}
-                    stack_box_slot{Widget := RareButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Epic", EpicPrice, EpicSlot))}}
-                    stack_box_slot{Widget := EpicButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Legendary", LegendaryPrice, LegendarySlot))}}
-                    stack_box_slot{Widget := LegendaryButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Elite", ElitePrice, EliteSlot))}}
-                    stack_box_slot{Widget := EliteButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Mythic", MythicPrice, MythicSlot))}}
-                    stack_box_slot{Widget := MythicButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Secret", SecretPrice, SecretSlot))}}
-                    stack_box_slot{Widget := SecretButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Divine", DivinePrice, DivineSlot))}}
-                    stack_box_slot{Widget := DivineButton}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Exotic", ExoticPrice, ExoticSlot))}}
-                    stack_box_slot{Widget := ExoticButton}
+                    stack_box_slot{Widget := Row1}
+                    stack_box_slot{Widget := Row2}
+                    stack_box_slot{Widget := Row3}
+
+            # Enveloppe la grille dans une zone défilante au cas où les 3 rangées
+            # dépasseraient la hauteur visible (permet de descendre pour tout voir).
+            ScrollArea := scroll_box:
+                Orientation := orientation.Vertical
+                Slots := array:
+                    scroll_box_slot{Widget := Grid}
 
             RootCanvas := canvas:
                 Slots := array:
                     canvas_slot:
-                        Widget := RootStack
-                        Anchors := anchors{Minimum := vector2{X := 0.25, Y := 0.10}, Maximum := vector2{X := 0.75, Y := 0.97}}
+                        Widget := ScrollArea
+                        Anchors := anchors{Minimum := vector2{X := 0.06, Y := 0.10}, Maximum := vector2{X := 0.94, Y := 0.97}}
                     canvas_slot:
                         Widget := CloseButton
                         Anchors := anchors{Minimum := vector2{X := 0.42, Y := 0.02}, Maximum := vector2{X := 0.58, Y := 0.08}}
