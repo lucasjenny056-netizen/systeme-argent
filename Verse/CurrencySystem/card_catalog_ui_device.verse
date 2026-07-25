@@ -1,14 +1,17 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /Verse.org/Verse }
+using { /Verse.org/Colors }
 using { /UnrealEngine.com/Temporary/UI }
 using { /Fortnite.com/UI }
 using { /UnrealEngine.com/Temporary/SpatialMath }
 
 # Bouton qui ouvre un catalogue façon "pokédex" : TOUTES les cartes du jeu
 # sont affichées en grille (3x3 par page), avec Précédent/Suivant pour
-# parcourir les pages. Une carte non encore obtenue par le joueur s'affiche
-# en "???" (nom et rareté cachés), mais son revenu ($/s) reste visible.
+# parcourir les pages. Nom et rareté d'une carte sont toujours visibles,
+# mais tant que le joueur ne l'a pas obtenue elle reste en gris et son
+# revenu ($/s) affiche "???" ; dès qu'elle tombe d'un pack, elle passe en
+# couleur (une couleur par rareté) et son revenu s'affiche.
 #
 # Verse n'a pas de zone de défilement (scroll_box) utilisable pour ce genre
 # de grille dynamique : la pagination par page de 9 cartes remplace le
@@ -64,14 +67,40 @@ card_catalog_ui_device := class(creative_device):
         else:
             false
 
+    # Couleur grise utilisée pour une carte pas encore obtenue.
+    LockedColor : color = color{R := 0.45, G := 0.45, B := 0.45, A := 1.0}
+
+    # Une couleur par rareté, appliquée une fois la carte obtenue.
+    RarityColor(Rarity : card_rarity) : color =
+        if (Rarity = card_rarity.Common):
+            color{R := 0.85, G := 0.85, B := 0.85, A := 1.0}
+        else if (Rarity = card_rarity.Rare):
+            color{R := 0.2, G := 0.6, B := 1.0, A := 1.0}
+        else if (Rarity = card_rarity.Epic):
+            color{R := 0.65, G := 0.2, B := 0.95, A := 1.0}
+        else if (Rarity = card_rarity.Legendary):
+            color{R := 1.0, G := 0.6, B := 0.0, A := 1.0}
+        else if (Rarity = card_rarity.Elite):
+            color{R := 0.0, G := 0.9, B := 0.9, A := 1.0}
+        else if (Rarity = card_rarity.Mythic):
+            color{R := 0.9, G := 0.1, B := 0.15, A := 1.0}
+        else if (Rarity = card_rarity.Secret):
+            color{R := 1.0, G := 0.1, B := 0.6, A := 1.0}
+        else if (Rarity = card_rarity.Divine):
+            color{R := 1.0, G := 0.85, B := 0.0, A := 1.0}
+        else:
+            color{R := 0.9, G := 0.0, B := 0.0, A := 1.0}
+
     # Renvoie la carte à Index dans Cards, ou une carte "vide" (CardId := "")
     # si Index dépasse la fin du tableau (sert à toujours avoir 9 cases par page).
     CardAt(Cards : []card_definition, Index : int) : card_definition =
         if (Found := Cards[Index]) then Found else card_definition{}
 
     # Construit une case de la grille. Case vide (fin de la liste des cartes) :
-    # un bloc de texte blanc. Case avec carte : revenu toujours visible, nom et
-    # rareté remplacés par "???" tant que le joueur ne possède pas la carte.
+    # un bloc de texte blanc. Case avec carte : nom et rareté toujours visibles ;
+    # tant que le joueur ne possède pas la carte, tout s'affiche en gris et le
+    # revenu affiche "???" ; une fois obtenue, tout passe dans la couleur de sa
+    # rareté et le revenu réel s'affiche.
     BuildCardBox(Card : card_definition, Owned : logic) : stack_box =
         if (Card.CardId = ""):
             stack_box:
@@ -79,14 +108,14 @@ card_catalog_ui_device := class(creative_device):
                 Slots := array:
                     stack_box_slot{Widget := text_block{DefaultText := DynamicText("")}}
         else:
-            NameText : string = if (Owned?) then Card.DisplayName else "???"
-            RarityText : string = if (Owned?) then RarityName(Card.Rarity) else "???"
+            TextColor : color = if (Owned?) then RarityColor(Card.Rarity) else LockedColor
+            IncomeText : string = if (Owned?) then "{Card.IncomeRate}$/s" else "???"
             stack_box:
                 Orientation := orientation.Vertical
                 Slots := array:
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText("{Card.IncomeRate}$/s")}}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(NameText)}}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(RarityText)}}
+                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(IncomeText), DefaultTextColor := TextColor}}
+                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(Card.DisplayName), DefaultTextColor := TextColor}}
+                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(RarityName(Card.Rarity)), DefaultTextColor := TextColor}}
 
     BuildRow(BoxA : stack_box, BoxB : stack_box, BoxC : stack_box) : stack_box =
         stack_box:
