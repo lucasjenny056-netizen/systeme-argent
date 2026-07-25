@@ -29,6 +29,15 @@ card_catalog_ui_device := class(creative_device):
     @editable
     CardCatalog : card_catalog = card_catalog{}
 
+    # Icônes des cartes. Verse ne permet pas de mettre une texture dans un
+    # tableau @editable (le tableau "Cards" de card_catalog reste donc
+    # texte uniquement) : chaque icône doit être son propre champ @editable
+    # nommé ici, puis reliée à son CardId dans GetIconForCard ci-dessous.
+    # Laisse vide (None) tant que tu n'as pas d'image pour une carte : elle
+    # s'affichera juste en texte coloré, comme avant.
+    @editable
+    BananaMonkeyIcon : ?texture = false
+
     var OpenUI : [player]canvas = map{}
     var CurrentPage : [player]int = map{}
 
@@ -96,11 +105,22 @@ card_catalog_ui_device := class(creative_device):
     CardAt(Cards : []card_definition, Index : int) : card_definition =
         if (Found := Cards[Index]) then Found else card_definition{}
 
+    # Fait correspondre un CardId à son icône @editable. Renvoie None (pas
+    # d'icône assignée) pour toute carte pas encore ajoutée ici : elle
+    # s'affiche alors en texte seul.
+    GetIconForCard(CardId : string) : ?texture =
+        if (CardId = "banana_monkey"):
+            BananaMonkeyIcon
+        else:
+            false
+
     # Construit une case de la grille. Case vide (fin de la liste des cartes) :
     # un bloc de texte blanc. Case avec carte : nom et rareté toujours visibles ;
     # tant que le joueur ne possède pas la carte, tout s'affiche en gris et le
     # revenu affiche "???" ; une fois obtenue, tout passe dans la couleur de sa
-    # rareté et le revenu réel s'affiche.
+    # rareté et le revenu réel s'affiche. Si une icône est assignée (voir
+    # GetIconForCard), elle s'affiche au-dessus du texte, en silhouette noire
+    # tant que non obtenue, en vraies couleurs une fois obtenue.
     BuildCardBox(Card : card_definition, Owned : logic) : stack_box =
         if (Card.CardId = ""):
             stack_box:
@@ -110,12 +130,27 @@ card_catalog_ui_device := class(creative_device):
         else:
             TextColor : color = if (Owned?) then RarityColor(Card.Rarity) else LockedColor
             IncomeText : string = if (Owned?) then "{Card.IncomeRate}$/s" else "???"
-            stack_box:
-                Orientation := orientation.Vertical
-                Slots := array:
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(IncomeText), DefaultTextColor := TextColor}}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(Card.DisplayName), DefaultTextColor := TextColor}}
-                    stack_box_slot{Widget := text_block{DefaultText := DynamicText(RarityName(Card.Rarity)), DefaultTextColor := TextColor}}
+            IncomeBlock := text_block{DefaultText := DynamicText(IncomeText), DefaultTextColor := TextColor}
+            NameBlock := text_block{DefaultText := DynamicText(Card.DisplayName), DefaultTextColor := TextColor}
+            RarityBlock := text_block{DefaultText := DynamicText(RarityName(Card.Rarity)), DefaultTextColor := TextColor}
+            MaybeIcon := GetIconForCard(Card.CardId)
+            if (Icon := MaybeIcon):
+                IconBlock := texture_block{DefaultImage := Icon, DefaultDesiredSize := vector2{X := 96.0, Y := 96.0}}
+                IconBlock.SetTint(TextColor)
+                stack_box:
+                    Orientation := orientation.Vertical
+                    Slots := array:
+                        stack_box_slot{Widget := IconBlock}
+                        stack_box_slot{Widget := IncomeBlock}
+                        stack_box_slot{Widget := NameBlock}
+                        stack_box_slot{Widget := RarityBlock}
+            else:
+                stack_box:
+                    Orientation := orientation.Vertical
+                    Slots := array:
+                        stack_box_slot{Widget := IncomeBlock}
+                        stack_box_slot{Widget := NameBlock}
+                        stack_box_slot{Widget := RarityBlock}
 
     BuildRow(BoxA : stack_box, BoxB : stack_box, BoxC : stack_box) : stack_box =
         stack_box:

@@ -48,6 +48,7 @@ card_catalog := class(creative_device):
     Cards : []card_definition = array:
         card_definition{CardId := "skibidi_common", DisplayName := "Skibidi Toilet", Rarity := card_rarity.Common, IncomeRate := 1}
         card_definition{CardId := "gyatt_rare", DisplayName := "Gyatt Rizzler", Rarity := card_rarity.Rare, IncomeRate := 4}
+        card_definition{CardId := "banana_monkey", DisplayName := "Banana Monkey", Rarity := card_rarity.Rare, IncomeRate := 5}
         card_definition{CardId := "rizz_epic", DisplayName := "Unspeakable Rizz", Rarity := card_rarity.Epic, IncomeRate := 8}
         card_definition{CardId := "gyatt_legendary", DisplayName := "Gyatt Supreme", Rarity := card_rarity.Legendary, IncomeRate := 20}
         card_definition{CardId := "sigma_elite", DisplayName := "Sigma Elite", Rarity := card_rarity.Elite, IncomeRate := 40}
