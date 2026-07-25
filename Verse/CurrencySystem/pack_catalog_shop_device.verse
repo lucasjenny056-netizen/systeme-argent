@@ -117,8 +117,8 @@ pack_catalog_shop_device := class(creative_device):
         var Parts : string = ""
         for (W : Weights):
             if (W.Weight > 0):
-                Percent := W.Weight / 100
-                set Parts += "{RarityName(W.Rarity)} {Percent}%  "
+                if (Percent := Floor(W.Weight / 100)):
+                    set Parts += "{RarityName(W.Rarity)} {Percent}%  "
         Parts
 
     BuildRowText(Name : string, Price : int, Slot : pack_slot_device) : string =
