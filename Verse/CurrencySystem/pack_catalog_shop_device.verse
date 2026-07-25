@@ -92,34 +92,36 @@ pack_catalog_shop_device := class(creative_device):
         if (Player := player[Agent]):
             OpenCatalog(Player)
 
+    # Codes courts (3 lettres) pour que la ligne d'odds tienne dans une carte
+    # étroite (3 cartes par rangée) sans déborder de l'écran.
     RarityName(Rarity : card_rarity) : string =
         if (Rarity = card_rarity.Common):
-            "Common"
+            "Com"
         else if (Rarity = card_rarity.Rare):
-            "Rare"
+            "Rar"
         else if (Rarity = card_rarity.Epic):
-            "Epic"
+            "Epi"
         else if (Rarity = card_rarity.Legendary):
-            "Legendary"
+            "Leg"
         else if (Rarity = card_rarity.Elite):
-            "Elite"
+            "Eli"
         else if (Rarity = card_rarity.Mythic):
-            "Mythic"
+            "Myt"
         else if (Rarity = card_rarity.Secret):
-            "Secret"
+            "Sec"
         else if (Rarity = card_rarity.Divine):
-            "Divine"
+            "Div"
         else:
-            "Exotic"
+            "Exo"
 
-    # Construit une ligne du style "Common 70%  Rare 20%  Epic 8%  Legendary 2%".
+    # Construit une ligne du style "Com70% Rar20% Epi8% Leg2%".
     BuildOddsText(Slot : pack_slot_device) : string =
         Weights := Slot.GetBaseWeights()
         var Parts : string = ""
         for (W : Weights):
             if (W.Weight > 0):
                 if (Percent := Floor(W.Weight / 100)):
-                    set Parts += "{RarityName(W.Rarity)} {Percent}%  "
+                    set Parts += "{RarityName(W.Rarity)}{Percent}% "
         Parts
 
     BuildRowText(Name : string, Price : int, Slot : pack_slot_device) : string =
@@ -150,15 +152,15 @@ pack_catalog_shop_device := class(creative_device):
     OpenCatalog(Player : player) : void =
         if (PlayerUI := GetPlayerUI[Player]):
             CloseButton := button_quiet{DefaultText := DynamicText("Fermer")}
-            CommonButton := button_loud{DefaultText := DynamicText("Acheter Common")}
-            RareButton := button_loud{DefaultText := DynamicText("Acheter Rare")}
-            EpicButton := button_loud{DefaultText := DynamicText("Acheter Epic")}
-            LegendaryButton := button_loud{DefaultText := DynamicText("Acheter Legendary")}
-            EliteButton := button_loud{DefaultText := DynamicText("Acheter Elite")}
-            MythicButton := button_loud{DefaultText := DynamicText("Acheter Mythic")}
-            SecretButton := button_loud{DefaultText := DynamicText("Acheter Secret")}
-            DivineButton := button_loud{DefaultText := DynamicText("Acheter Divine")}
-            ExoticButton := button_loud{DefaultText := DynamicText("Acheter Exotic")}
+            CommonButton := button_loud{DefaultText := DynamicText("Acheter")}
+            RareButton := button_loud{DefaultText := DynamicText("Acheter")}
+            EpicButton := button_loud{DefaultText := DynamicText("Acheter")}
+            LegendaryButton := button_loud{DefaultText := DynamicText("Acheter")}
+            EliteButton := button_loud{DefaultText := DynamicText("Acheter")}
+            MythicButton := button_loud{DefaultText := DynamicText("Acheter")}
+            SecretButton := button_loud{DefaultText := DynamicText("Acheter")}
+            DivineButton := button_loud{DefaultText := DynamicText("Acheter")}
+            ExoticButton := button_loud{DefaultText := DynamicText("Acheter")}
 
             # Grille 3x3 : 3 rangées de 3 packs, du moins cher au plus cher.
             Row1 := BuildRow(BuildCard("Common", CommonPrice, CommonSlot, CommonButton), BuildCard("Rare", RarePrice, RareSlot, RareButton), BuildCard("Epic", EpicPrice, EpicSlot, EpicButton))
@@ -176,7 +178,7 @@ pack_catalog_shop_device := class(creative_device):
                 Slots := array:
                     canvas_slot:
                         Widget := Grid
-                        Anchors := anchors{Minimum := vector2{X := 0.06, Y := 0.10}, Maximum := vector2{X := 0.94, Y := 0.97}}
+                        Anchors := anchors{Minimum := vector2{X := 0.01, Y := 0.10}, Maximum := vector2{X := 0.99, Y := 0.97}}
                     canvas_slot:
                         Widget := CloseButton
                         Anchors := anchors{Minimum := vector2{X := 0.42, Y := 0.02}, Maximum := vector2{X := 0.58, Y := 0.08}}
