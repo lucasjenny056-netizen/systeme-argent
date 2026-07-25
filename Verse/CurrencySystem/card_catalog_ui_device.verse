@@ -135,7 +135,7 @@ card_catalog_ui_device := class(creative_device):
             NameBlock := text_block{DefaultText := DynamicText(Card.DisplayName), DefaultTextColor := TextColor}
             RarityBlock := text_block{DefaultText := DynamicText(RarityName(Card.Rarity)), DefaultTextColor := TextColor}
             MaybeIcon := GetIconForCard(Card.CardId)
-            if (Icon := MaybeIcon):
+            if (Icon := MaybeIcon?):
                 IconBlock := texture_block{DefaultImage := Icon, DefaultDesiredSize := vector2{X := 96.0, Y := 96.0}}
                 IconBlock.SetTint(TextColor)
                 stack_box:
