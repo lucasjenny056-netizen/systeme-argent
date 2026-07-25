@@ -2,6 +2,7 @@ using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
 using { /Verse.org/Verse }
 using { /Verse.org/Colors }
+using { /Verse.org/Assets }
 using { /UnrealEngine.com/Temporary/UI }
 using { /Fortnite.com/UI }
 using { /UnrealEngine.com/Temporary/SpatialMath }
