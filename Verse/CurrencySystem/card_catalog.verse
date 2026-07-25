@@ -56,6 +56,11 @@ card_catalog := class(creative_device):
         card_definition{CardId := "livvy_divine", DisplayName := "Certified Divine", Rarity := card_rarity.Divine, IncomeRate := 350}
         card_definition{CardId := "sussy_exotic", DisplayName := "Sussy Baka Imposter", Rarity := card_rarity.Exotic, IncomeRate := 800}
 
+    # Renvoie toutes les cartes du jeu (utilisé par le catalogue façon "pokédex" :
+    # il affiche aussi les cartes non encore obtenues, en "???").
+    GetAllCards<public>() : []card_definition =
+        Cards
+
     RollRarity(Weights : []rarity_weight) : card_rarity =
         var TotalWeight : int = 0
         for (Tier : Weights):
