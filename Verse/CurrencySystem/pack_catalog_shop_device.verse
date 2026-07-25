@@ -174,7 +174,7 @@ pack_catalog_shop_device := class(creative_device):
                         Widget := CloseButton
                         Anchors := anchors{Minimum := vector2{X := 0.42, Y := 0.02}, Maximum := vector2{X := 0.58, Y := 0.08}}
 
-            PlayerUI.AddWidget(RootCanvas)
+            PlayerUI.AddWidget(RootCanvas, player_ui_slot{InputMode := ui_input_mode.All})
             if (set OpenUI[Player] = RootCanvas):
                 true
 

@@ -48,7 +48,7 @@ luck_upgrade_ui_device := class(creative_device):
                         Widget := CloseButton
                         Anchors := anchors{Minimum := vector2{X := 0.35, Y := 0.58}, Maximum := vector2{X := 0.65, Y := 0.66}}
 
-            PlayerUI.AddWidget(RootCanvas)
+            PlayerUI.AddWidget(RootCanvas, player_ui_slot{InputMode := ui_input_mode.All})
             if (set OpenUI[Player] = RootCanvas):
                 true
             if (set LevelTexts[Player] = LevelText):
