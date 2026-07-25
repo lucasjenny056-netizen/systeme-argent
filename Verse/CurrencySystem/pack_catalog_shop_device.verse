@@ -146,7 +146,6 @@ pack_catalog_shop_device := class(creative_device):
             RootStack := stack_box:
                 Orientation := orientation.Vertical
                 Slots := array:
-                    stack_box_slot{Widget := CloseButton}
                     stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Common", CommonPrice, CommonSlot))}}
                     stack_box_slot{Widget := CommonButton}
                     stack_box_slot{Widget := text_block{DefaultText := DynamicText(BuildRowText("Rare", RarePrice, RareSlot))}}
@@ -170,7 +169,10 @@ pack_catalog_shop_device := class(creative_device):
                 Slots := array:
                     canvas_slot:
                         Widget := RootStack
-                        Anchors := anchors{Minimum := vector2{X := 0.25, Y := 0.03}, Maximum := vector2{X := 0.75, Y := 0.97}}
+                        Anchors := anchors{Minimum := vector2{X := 0.25, Y := 0.10}, Maximum := vector2{X := 0.75, Y := 0.97}}
+                    canvas_slot:
+                        Widget := CloseButton
+                        Anchors := anchors{Minimum := vector2{X := 0.42, Y := 0.02}, Maximum := vector2{X := 0.58, Y := 0.08}}
 
             PlayerUI.AddWidget(RootCanvas)
             if (set OpenUI[Player] = RootCanvas):
