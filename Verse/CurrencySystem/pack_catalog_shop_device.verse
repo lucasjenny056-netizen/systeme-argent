@@ -172,17 +172,10 @@ pack_catalog_shop_device := class(creative_device):
                     stack_box_slot{Widget := Row2}
                     stack_box_slot{Widget := Row3}
 
-            # Enveloppe la grille dans une zone défilante au cas où les 3 rangées
-            # dépasseraient la hauteur visible (permet de descendre pour tout voir).
-            ScrollArea := scroll_box:
-                Orientation := orientation.Vertical
-                Slots := array:
-                    scroll_box_slot{Widget := Grid}
-
             RootCanvas := canvas:
                 Slots := array:
                     canvas_slot:
-                        Widget := ScrollArea
+                        Widget := Grid
                         Anchors := anchors{Minimum := vector2{X := 0.06, Y := 0.10}, Maximum := vector2{X := 0.94, Y := 0.97}}
                     canvas_slot:
                         Widget := CloseButton
