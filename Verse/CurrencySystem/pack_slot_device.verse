@@ -54,7 +54,7 @@ pack_slot_device := class(creative_device):
     CardCatalog : card_catalog = card_catalog{}
 
     @editable
-    TierId : string = "common"
+    TierId<public> : string = "common"
 
     @editable
     CommonWeight : int = 7000
@@ -107,6 +107,20 @@ pack_slot_device := class(creative_device):
                 Consumed : logic = Catalog.TryConsumePack(Player, TierId)
                 if (Consumed?):
                     spawn{ OpenPack(Player) }
+
+    # Table de probabilités du pack SANS le bonus de chance du joueur (sert
+    # uniquement à l'affichage, ex: dans un catalogue listant tous les packs).
+    GetBaseWeights<public>() : []rarity_weight =
+        array:
+            rarity_weight{Rarity := card_rarity.Common, Weight := CommonWeight}
+            rarity_weight{Rarity := card_rarity.Rare, Weight := RareWeight}
+            rarity_weight{Rarity := card_rarity.Epic, Weight := EpicWeight}
+            rarity_weight{Rarity := card_rarity.Legendary, Weight := LegendaryWeight}
+            rarity_weight{Rarity := card_rarity.Elite, Weight := EliteWeight}
+            rarity_weight{Rarity := card_rarity.Mythic, Weight := MythicWeight}
+            rarity_weight{Rarity := card_rarity.Secret, Weight := SecretWeight}
+            rarity_weight{Rarity := card_rarity.Divine, Weight := DivineWeight}
+            rarity_weight{Rarity := card_rarity.Exotic, Weight := ExoticWeight}
 
     BuildWeights(Player : player) : []rarity_weight =
         LuckBonus := Catalog.GetLuckLevel(Player) * LuckWeightPerLevel
