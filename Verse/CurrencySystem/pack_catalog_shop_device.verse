@@ -1,5 +1,6 @@
 using { /Fortnite.com/Devices }
 using { /Verse.org/Simulation }
+using { /Verse.org/Verse }
 using { /UnrealEngine.com/Temporary/UI }
 using { /Fortnite.com/UI }
 using { /UnrealEngine.com/Temporary/SpatialMath }
