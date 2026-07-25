@@ -68,28 +68,28 @@ card_catalog_ui_device := class(creative_device):
             false
 
     # Couleur grise utilisée pour une carte pas encore obtenue.
-    LockedColor : color = color{R := 0.45, G := 0.45, B := 0.45, A := 1.0}
+    LockedColor : color = color{R := 0.45, G := 0.45, B := 0.45}
 
     # Une couleur par rareté, appliquée une fois la carte obtenue.
     RarityColor(Rarity : card_rarity) : color =
         if (Rarity = card_rarity.Common):
-            color{R := 0.85, G := 0.85, B := 0.85, A := 1.0}
+            color{R := 0.85, G := 0.85, B := 0.85}
         else if (Rarity = card_rarity.Rare):
-            color{R := 0.2, G := 0.6, B := 1.0, A := 1.0}
+            color{R := 0.2, G := 0.6, B := 1.0}
         else if (Rarity = card_rarity.Epic):
-            color{R := 0.65, G := 0.2, B := 0.95, A := 1.0}
+            color{R := 0.65, G := 0.2, B := 0.95}
         else if (Rarity = card_rarity.Legendary):
-            color{R := 1.0, G := 0.6, B := 0.0, A := 1.0}
+            color{R := 1.0, G := 0.6, B := 0.0}
         else if (Rarity = card_rarity.Elite):
-            color{R := 0.0, G := 0.9, B := 0.9, A := 1.0}
+            color{R := 0.0, G := 0.9, B := 0.9}
         else if (Rarity = card_rarity.Mythic):
-            color{R := 0.9, G := 0.1, B := 0.15, A := 1.0}
+            color{R := 0.9, G := 0.1, B := 0.15}
         else if (Rarity = card_rarity.Secret):
-            color{R := 1.0, G := 0.1, B := 0.6, A := 1.0}
+            color{R := 1.0, G := 0.1, B := 0.6}
         else if (Rarity = card_rarity.Divine):
-            color{R := 1.0, G := 0.85, B := 0.0, A := 1.0}
+            color{R := 1.0, G := 0.85, B := 0.0}
         else:
-            color{R := 0.9, G := 0.0, B := 0.0, A := 1.0}
+            color{R := 0.9, G := 0.0, B := 0.0}
 
     # Renvoie la carte à Index dans Cards, ou une carte "vide" (CardId := "")
     # si Index dépasse la fin du tableau (sert à toujours avoir 9 cases par page).
